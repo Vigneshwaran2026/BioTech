@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stackly Preloader</title>
+    <style>
+        :root {
+            --stackly-global-color: #3772ff;
+            --stackly-global-color-rgb: 55, 114, 255;
+            --stackly-secondary-color: #001837;
+            --stackly-secondary-color-rgb: 0, 24, 55;
+            --stackly-light-color: #eaf1ff;
+            --stackly-white-color: #ffffff;
+            --stackly-white-color-rgb: 255, 255, 255;
+            --stackly-blackish-color: #011938;
+            --stackly-blackish-color-rgb: 1, 25, 56;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--stackly-secondary-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Preloader Container */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--stackly-secondary-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Logo Animation Container */
+        .preloader-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        /* Animated Logo Mark */
+        .logo-mark {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .logo-mark svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .logo-mark .hexagon {
+            fill: none;
+            stroke: var(--stackly-global-color);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: drawHexagon 2s ease-in-out infinite;
+        }
+
+        .logo-mark .inner-shape {
+            fill: var(--stackly-global-color);
+            opacity: 0;
+            transform-origin: center;
+            animation: pulseInner 2s ease-in-out infinite 0.5s;
+        }
+
+        @keyframes drawHexagon {
+            0% {
+                stroke-dashoffset: 300;
+                opacity: 0;
+            }
+            50% {
+                stroke-dashoffset: 0;
+                opacity: 1;
+            }
+            100% {
+                stroke-dashoffset: -300;
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulseInner {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Orbiting Dots */
+        .orbit-container {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .orbit-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--stackly-global-color);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            margin-top: -4px;
+            margin-left: -4px;
+            animation: orbit 2s linear infinite;
+        }
+
+        .orbit-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .orbit-dot:nth-child(2) {
+            animation-delay: -0.67s;
+            background: var(--stackly-light-color);
+        }
+
+        .orbit-dot:nth-child(3) {
+            animation-delay: -1.33s;
+            background: rgba(55, 114, 255, 0.6);
+        }
+
+        @keyframes orbit {
+            0% {
+                transform: rotate(0deg) translateX(50px) rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg) translateX(50px) rotate(-360deg);
+            }
+        }
+
+        /* Logo Text */
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--stackly-white-color);
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .logo-text span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        .logo-text span:nth-child(1) { animation-delay: 0.1s; }
+        .logo-text span:nth-child(2) { animation-delay: 0.15s; }
+        .logo-text span:nth-child(3) { animation-delay: 0.2s; }
+        .logo-text span:nth-child(4) { animation-delay: 0.25s; }
+        .logo-text span:nth-child(5) { animation-delay: 0.3s; }
+        .logo-text span:nth-child(6) { animation-delay: 0.35s; }
+        .logo-text span:nth-child(7) { animation-delay: 0.4s; }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Bar */
+        .loading-bar {
+            width: 200px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--stackly-global-color), var(--stackly-light-color));
+            border-radius: 3px;
+            width: 0%;
+            animation: loadProgress 2.5s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(55, 114, 255, 0.5);
+        }
+
+        @keyframes loadProgress {
+            0% {
+                width: 0%;
+                left: 0;
+            }
+            50% {
+                width: 100%;
+                left: 0;
+            }
+            100% {
+                width: 0%;
+                left: 100%;
+            }
+        }
+
+        /* Loading Text */
+        .loading-text {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 20px;
+            animation: pulseText 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseText {
+            0%, 100% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Particle Effects */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--stackly-global-color);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-delay: 0.5s; }
+        .particle:nth-child(3) { left: 30%; animation-delay: 1s; }
+        .particle:nth-child(4) { left: 40%; animation-delay: 1.5s; }
+        .particle:nth-child(5) { left: 50%; animation-delay: 0.3s; }
+        .particle:nth-child(6) { left: 60%; animation-delay: 0.8s; }
+        .particle:nth-child(7) { left: 70%; animation-delay: 1.3s; }
+        .particle:nth-child(8) { left: 80%; animation-delay: 0.2s; }
+        .particle:nth-child(9) { left: 90%; animation-delay: 0.7s; }
+
+        @keyframes float {
+            0% {
+                bottom: -10px;
+                opacity: 0;
+                transform: translateX(0) scale(0);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateX(20px) scale(1);
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                bottom: 100%;
+                opacity: 0;
+                transform: translateX(-20px) scale(0);
+            }
+        }
+
+        /* Main Content (Demo) */
+        .main-content {
+            text-align: center;
+            color: var(--stackly-white-color);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .main-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .main-content h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--stackly-white-color), var(--stackly-global-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-content p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo-mark {
+                width: 60px;
+                height: 60px;
+            }
+
+            .orbit-container {
+                width: 90px;
+                height: 90px;
+            }
+
+            .orbit-dot {
+                width: 6px;
+                height: 6px;
+                margin-top: -3px;
+                margin-left: -3px;
+            }
+
+            @keyframes orbit {
+                0% {
+                    transform: rotate(0deg) translateX(38px) rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg) translateX(38px) rotate(-360deg);
+                }
+            }
+
+            .logo-text {
+                font-size: 22px;
+            }
+
+            .loading-bar {
+                width: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Preloader Section -->
+    <div class="preloader" id="preloader">
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        
+        <div class="preloader-content">
+            <!-- Animated Logo Mark with Orbiting Dots -->
+            <div style="position: relative;">
+                <div class="orbit-container">
+                    <div class="orbit-dot"></div>
+                    <div class="orbit-dot"></div>
+                    <div class="orbit-dot"></div>
+                </div>
+                
+                <div class="logo-mark">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Hexagon outline -->
+                        <polygon class="hexagon" points="50,5 93,25 93,75 50,95 7,75 7,25"/>
+                        <!-- Inner shape -->
+                        <polygon class="inner-shape" points="50,25 72,35 72,65 50,75 28,65 28,35"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Logo Text -->
+            <div class="logo-text">
+                <span>S</span>
+                <span>T</span>
+                <span>A</span>
+                <span>C</span>
+                <span>K</span>
+                <span>L</span>
+                <span>Y</span>
+            </div>
+
+            <!-- Loading Bar -->
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+
+            <!-- Loading Text -->
+            <div class="loading-text">Loading Experience</div>
+        </div>
+    </div>
+
+    <!-- Main Content (Your actual page content goes here) -->
+    <div class="main-content" id="mainContent">
+        <h1>Welcome to Stackly</h1>
+        <p>Your premium OTT streaming experience begins here. Discover thousands of movies, series, and exclusive content.</p>
+    </div>
+
+    <script>
+        // Preloader functionality
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            const mainContent = document.getElementById('mainContent');
+            
+            // Simulate loading time (remove setTimeout in production and use actual load events)
+            setTimeout(function() {
+                preloader.classList.add('hidden');
+                mainContent.classList.add('visible');
+                
+                // Remove preloader from DOM after animation
+                setTimeout(function() {
+                    preloader.style.display = 'none';
+                }, 600);
+            }, 3000); // 3 seconds demo duration
+        });
+
+        // Optional: Update loading text dynamically
+        const loadingTexts = ['Loading Experience', 'Preparing Content', 'Almost Ready', 'Welcome'];
+        let textIndex = 0;
+        
+        setInterval(() => {
+            textIndex = (textIndex + 1) % loadingTexts.length;
+            const loadingText = document.querySelector('.loading-text');
+            if (loadingText && !document.getElementById('preloader').classList.contains('hidden')) {
+                loadingText.style.opacity = '0';
+                setTimeout(() => {
+                    loadingText.textContent = loadingTexts[textIndex];
+                    loadingText.style.opacity = '1';
+                }, 200);
+            }
+        }, 2500);
+    </script>
+
+</body>
+</html>

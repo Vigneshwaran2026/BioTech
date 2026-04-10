@@ -1,0 +1,3833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioTech Researcher Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --stackly-global-color: #3772ff;
+            --stackly-global-color-rgb: 55, 114, 255;
+            --stackly-secondary-color: #001837;
+            --stackly-secondary-color-rgb: 0, 24, 55;
+            --stackly-light-color: #eaf1ff;
+            --stackly-white-color: #ffffff;
+            --stackly-white-color-rgb: 255, 255, 255;
+            --stackly-blackish-color: #011938;
+            --stackly-blackish-color-rgb: 1, 25, 56;
+            --stackly-link-color-normal: #001837;
+            --stackly-link-color-hover: #3772ff;
+            
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+            --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--stackly-light-color) 0%, #ffffff 50%, var(--stackly-light-color) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* DNA Helix Animation */
+        .dna-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+            opacity: 0.03;
+        }
+
+        .dna-strand {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--stackly-global-color), transparent);
+            animation: dnaFloat 20s infinite linear;
+        }
+
+        @keyframes dnaFloat {
+            0% { transform: translateY(-100%) rotate(0deg); }
+            100% { transform: translateY(100%) rotate(360deg); }
+        }
+
+              /* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--stackly-secondary-color);
+    z-index: 1000;
+    transition: var(--transition);
+
+    display: flex;              /* ✅ IMPORTANT */
+    flex-direction: column;     /* ✅ IMPORTANT */
+}
+.sidebar-menu {
+    flex: 1;              /* take remaining space */
+    overflow-y: auto;     /* scroll if needed */
+    padding: 20px 0;
+}
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--stackly-white-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--stackly-global-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .logo-text {
+            white-space: nowrap;
+            opacity: 1;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--stackly-white-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .toggle-btn:hover {
+            background: rgba(55, 114, 255, 0.2);
+            color: var(--stackly-global-color);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-category {
+            padding: 0 20px 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-category {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .menu-item {
+            position: relative;
+            margin: 4px 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .menu-item.active {
+            background: var(--stackly-global-color);
+        }
+
+        .menu-item:hover:not(.active) {
+            background: rgba(55, 114, 255, 0.1);
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            gap: 12px;
+            width: 100%;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .menu-item.active .menu-link {
+            color: var(--stackly-white-color);
+        }
+
+        .menu-link:hover {
+            color: var(--stackly-white-color);
+        }
+
+        .menu-icon {
+            font-size: 1.3rem;
+            min-width: 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .menu-text {
+            white-space: nowrap;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .menu-badge {
+            margin-left: auto;
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 4px;
+            min-width: 8px;
+            height: 8px;
+            font-size: 0;
+        }
+
+        .menu-arrow {
+            margin-left: auto;
+            transition: var(--transition);
+        }
+
+        .menu-item.has-submenu.open .menu-arrow {
+            transform: rotate(90deg);
+        }
+
+        .sidebar.collapsed .menu-arrow {
+            display: none;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-item.open .submenu {
+            max-height: 300px;
+        }
+
+        .submenu-item {
+            padding: 12px 20px 12px 56px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .submenu-item:hover, .submenu-item.active {
+            color: var(--stackly-white-color);
+            background: rgba(55, 114, 255, 0.1);
+            padding-left: 60px;
+        }
+
+        .sidebar.collapsed .submenu {
+            display: none;
+        }
+
+        /* User Profile in Sidebar */
+     .sidebar-footer {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    position: relative;   /* ✅ REMOVE absolute */
+}
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--stackly-white-color);
+            font-weight: 600;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .user-info {
+            opacity: 0;
+            width: 0;
+        }
+
+        .user-name {
+            color: var(--stackly-white-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .user-role {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background: var(--stackly-white-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 2px 20px rgba(0, 24, 55, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .breadcrumb a {
+            color: var(--stackly-global-color);
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Quick Action Buttons */
+        .quick-actions-bar {
+            display: flex;
+            gap: 12px;
+        }
+
+        .quick-action-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .quick-action-btn.primary {
+            background: var(--stackly-global-color);
+            color: white;
+        }
+
+        .quick-action-btn.primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(55, 114, 255, 0.4);
+        }
+
+        .quick-action-btn.secondary {
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+        }
+
+        .quick-action-btn.secondary:hover {
+            background: #d4e3ff;
+        }
+
+        /* Search Box */
+        .search-container {
+            position: relative;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--stackly-light-color);
+            border-radius: 12px;
+            padding: 10px 16px;
+            width: 320px;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--stackly-global-color);
+            background: var(--stackly-white-color);
+            box-shadow: 0 0 0 4px rgba(55, 114, 255, 0.1);
+        }
+
+        .search-box i {
+            color: rgba(0, 24, 55, 0.4);
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+            color: var(--stackly-secondary-color);
+        }
+
+        .search-box input::placeholder {
+            color: rgba(0, 24, 55, 0.4);
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-btn {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(55, 114, 255, 0.3);
+        }
+
+        .action-btn .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Research Dashboard Stats */
+        .research-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--stackly-global-color), #5a8cff);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(55, 114, 255, 0.15);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.blue {
+            background: rgba(55, 114, 255, 0.1);
+            color: var(--stackly-global-color);
+        }
+
+        .stat-icon.green {
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        .stat-icon.orange {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .stat-icon.red {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .stat-trend.up {
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        .stat-trend.down {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: rgba(0, 24, 55, 0.6);
+            font-size: 0.95rem;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(55, 114, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background: #d4e3ff;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: var(--stackly-white-color);
+        }
+
+        .btn-danger:hover {
+            background: #ff3344;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        .btn-success {
+            background: #2ed573;
+            color: var(--stackly-white-color);
+        }
+
+        .btn-success:hover {
+            background: #26b965;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(46, 213, 115, 0.4);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: var(--stackly-secondary-color);
+        }
+
+        .btn-warning:hover {
+            background: #e6ac00;
+            transform: translateY(-2px);
+        }
+
+        /* Experiment Cards */
+        .experiment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .experiment-card {
+            background: var(--stackly-white-color);
+            border-radius: 16px;
+            padding: 24px;
+            border: 2px solid var(--stackly-light-color);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .experiment-card:hover {
+            border-color: var(--stackly-global-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(55, 114, 255, 0.1);
+        }
+
+        .experiment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .experiment-id {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.5);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .experiment-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .experiment-status.active {
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        .experiment-status.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .experiment-status.completed {
+            background: rgba(55, 114, 255, 0.1);
+            color: var(--stackly-global-color);
+        }
+
+        .experiment-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .experiment-description {
+            color: rgba(0, 24, 55, 0.7);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .experiment-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .experiment-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .experiment-progress {
+            margin-bottom: 16px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--stackly-light-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--stackly-global-color), #5a8cff);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .experiment-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .experiment-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(0, 24, 55, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--stackly-light-color);
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--stackly-light-color);
+            font-size: 0.95rem;
+        }
+
+        .data-table tr {
+            transition: var(--transition);
+        }
+
+        .data-table tr:hover {
+            background: rgba(55, 114, 255, 0.03);
+        }
+
+        .sample-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sample-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(55, 114, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--stackly-global-color);
+        }
+
+        .sample-details h4 {
+            font-size: 0.95rem;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 2px;
+        }
+
+        .sample-details p {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        /* Equipment Status */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .equipment-card {
+            background: var(--stackly-white-color);
+            border-radius: 16px;
+            padding: 20px;
+            border: 2px solid var(--stackly-light-color);
+            transition: var(--transition);
+        }
+
+        .equipment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(55, 114, 255, 0.1);
+        }
+
+        .equipment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .equipment-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(55, 114, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--stackly-global-color);
+        }
+
+        .equipment-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2ed573;
+            animation: pulse 2s infinite;
+        }
+
+        .equipment-status.maintenance {
+            background: #ffc107;
+            animation: none;
+        }
+
+        .equipment-status.offline {
+            background: #ff4757;
+            animation: none;
+        }
+
+        .equipment-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .equipment-location {
+            color: rgba(0, 24, 55, 0.6);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .equipment-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .equipment-metric {
+            text-align: center;
+            padding: 12px;
+            background: var(--stackly-light-color);
+            border-radius: 10px;
+        }
+
+        .equipment-metric-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .equipment-metric-label {
+            font-size: 0.8rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        /* Protocol Cards */
+        .protocol-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .protocol-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--stackly-light-color);
+            border-radius: 12px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .protocol-item:hover {
+            background: rgba(55, 114, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .protocol-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--stackly-white-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--stackly-global-color);
+        }
+
+        .protocol-info {
+            flex: 1;
+        }
+
+        .protocol-name {
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .protocol-meta {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .protocol-version {
+            padding: 4px 12px;
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--stackly-global-color);
+        }
+
+        /* Collaboration */
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid var(--stackly-light-color);
+            transition: var(--transition);
+        }
+
+        .team-member:last-child {
+            border-bottom: none;
+        }
+
+        .team-member:hover {
+            background: rgba(55, 114, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .member-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .member-role {
+            font-size: 0.9rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .member-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #2ed573;
+        }
+
+        .member-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #2ed573;
+            border-radius: 50%;
+        }
+
+        /* Data Visualization */
+        .chart-container {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, var(--stackly-light-color) 0%, #ffffff 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--stackly-light-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+            animation: fadeInLeft 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--stackly-global-color);
+            border: 3px solid var(--stackly-white-color);
+            box-shadow: 0 0 0 3px var(--stackly-global-color);
+        }
+
+        .timeline-content {
+            background: var(--stackly-light-color);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: rgba(0, 24, 55, 0.6);
+            margin-bottom: 4px;
+        }
+
+        .timeline-text {
+            font-size: 0.95rem;
+            color: var(--stackly-secondary-color);
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 24, 55, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 32px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(20px);
+            transition: var(--transition);
+            box-shadow: 0 25px 50px rgba(0, 24, 55, 0.2);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: #ff4757;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--stackly-global-color);
+            box-shadow: 0 0 0 4px rgba(55, 114, 255, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--stackly-white-color);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 24, 55, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+            border-left: 4px solid var(--stackly-global-color);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success { border-left-color: #2ed573; }
+        .toast.error { border-left-color: #ff4757; }
+        .toast.warning { border-left-color: #ffc107; }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--stackly-white-color);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .atom-loader {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+
+        .atom-loader::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid var(--stackly-light-color);
+            border-top-color: var(--stackly-global-color);
+            border-radius: 50%;
+            animation: atomSpin 1s linear infinite;
+        }
+
+        .atom-loader::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: var(--stackly-global-color);
+            border-radius: 50%;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 2px solid var(--stackly-light-color);
+            background: var(--stackly-white-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background: var(--stackly-global-color);
+            border-color: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 10px;
+            background: var(--stackly-white-color);
+            color: var(--stackly-secondary-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .filter-select:focus {
+            border-color: var(--stackly-global-color);
+        }
+
+        .search-input {
+            padding: 10px 16px;
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 10px;
+            width: 300px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--stackly-global-color);
+            box-shadow: 0 0 0 4px rgba(55, 114, 255, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .research-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar.collapsed + .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-toggle {
+                display: flex !important;
+            }
+            
+            .research-stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .experiment-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions-bar {
+                display: none;
+            }
+        }
+
+        .mobile-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--stackly-light-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--stackly-global-color);
+            border-radius: 4px;
+        }
+
+        /* Publication Cards */
+        .publication-card {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: var(--stackly-white-color);
+            border-radius: 16px;
+            border: 2px solid var(--stackly-light-color);
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+
+        .publication-card:hover {
+            border-color: var(--stackly-global-color);
+            transform: translateX(5px);
+        }
+
+        .publication-journal {
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .publication-content {
+            flex: 1;
+        }
+
+        .publication-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .publication-authors {
+            color: rgba(0, 24, 55, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .publication-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .publication-status {
+            padding: 4px 12px;
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Grant Cards */
+        .grant-card {
+            background: var(--stackly-white-color);
+            border-radius: 16px;
+            padding: 24px;
+            border-left: 4px solid var(--stackly-global-color);
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+
+        .grant-card:hover {
+            box-shadow: 0 10px 30px rgba(55, 114, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .grant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .grant-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .grant-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stackly-global-color);
+        }
+
+        .grant-agency {
+            color: rgba(0, 24, 55, 0.7);
+            margin-bottom: 16px;
+        }
+
+        .grant-timeline {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .grant-progress {
+            flex: 1;
+            height: 6px;
+            background: var(--stackly-light-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .grant-progress-fill {
+            height: 100%;
+            background: var(--stackly-global-color);
+            border-radius: 3px;
+        }
+
+        /* Inventory Specific */
+        .inventory-alert {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: rgba(255, 71, 87, 0.1);
+            border: 2px solid rgba(255, 71, 87, 0.3);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .inventory-alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ff4757;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .inventory-alert-content {
+            flex: 1;
+        }
+
+        .inventory-alert-title {
+            font-weight: 700;
+            color: #ff4757;
+            margin-bottom: 4px;
+        }
+
+        .inventory-alert-text {
+            color: rgba(0, 24, 55, 0.8);
+            font-size: 0.9rem;
+        }
+
+        /* SOP Viewer */
+        .sop-viewer {
+            background: var(--stackly-white-color);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--stackly-light-color);
+        }
+
+        .sop-header {
+            padding: 20px;
+            background: var(--stackly-light-color);
+            border-bottom: 2px solid var(--stackly-light-color);
+        }
+
+        .sop-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .sop-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.9rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .sop-content {
+            padding: 24px;
+            line-height: 1.8;
+            color: rgba(0, 24, 55, 0.9);
+        }
+
+        .sop-step {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(55, 114, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .sop-step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--stackly-global-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+                .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* center logo */
+    width: 100%;
+}
+
+.logo-img {
+    width: auto;
+    height: 62px;
+    object-fit: contain;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+/* Hover effect */
+.logo:hover .logo-img {
+    transform: scale(1.1);
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .data-table th,
+    .data-table td {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+
+    .sample-details h4 {
+        font-size: 0.85rem;
+    }
+
+    .sample-details p {
+        font-size: 0.7rem;
+    }
+
+    .sample-icon {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Main SOP container */
+    .sop-content {
+        padding: 16px;
+    }
+
+    /* Each step */
+    .sop-step {
+        flex-direction: column;   /* ✅ stack vertically */
+        gap: 10px;
+        padding: 12px;
+    }
+
+    /* Step number */
+    .sop-step-number {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+
+    /* Text readability */
+    .sop-step div {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .team-member {
+        flex-direction: column;   /* ✅ stack */
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .member-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .member-info {
+        width: 100%;
+    }
+
+    .member-name {
+        font-size: 0.95rem;
+    }
+
+    .member-role {
+        font-size: 0.8rem;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .team-member .btn {
+        width: 100%;          /* ✅ full width button */
+        justify-content: center;
+    }
+
+}
+@media (max-width: 768px) {
+
+    .section-card {
+        overflow-x: hidden;
+    }
+
+    .team-member {
+        word-break: break-word;   /* ✅ long names fix */
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .publication-card {
+        flex-direction: column;   /* ✅ stack */
+        gap: 12px;
+        padding: 16px;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .publication-journal {
+        width: 50px;
+        height: 60px;
+        font-size: 1.2rem;
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .publication-title {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+
+    .publication-authors {
+        font-size: 0.8rem;
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .publication-meta {
+        flex-direction: column;   /* ✅ stack meta */
+        gap: 4px;
+        font-size: 0.75rem;
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .publication-card {
+        word-break: break-word;   /* ✅ long text fix */
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    /* Fix main overflow */
+    body {
+        overflow-x: hidden;
+    }
+
+    .main-content,
+    .content,
+    .chart-container {
+        overflow-x: hidden;
+    }
+
+    /* Fix chart bars */
+    .chart-bars {
+        display: flex;
+        justify-content: space-between;
+        gap: 4px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .big-bar {
+        flex: 1;            /* ✅ auto fit */
+        min-width: 0;       /* ✅ prevent overflow */
+        max-width: 100%;
+    }
+
+    /* Prevent container overflow */
+    .chart-placeholder {
+        width: 100%;
+        overflow: hidden;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .calendar-grid {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px; /* reduce spacing */
+    }
+
+    .calendar-day-header {
+        font-size: 0.7rem;
+        padding: 6px 0;
+    }
+
+    .calendar-day {
+        font-size: 0.75rem;
+        padding: 8px 0;
+        aspect-ratio: auto;   /* ✅ remove square force */
+        height: 32px;         /* ✅ fixed height */
+    }
+
+    /* Fix section header buttons overflow */
+    .section-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .section-actions .btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    /* Prevent full section overflow */
+    .section-card {
+        overflow-x: hidden;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* TITLE FIX */
+    .page-title {
+        font-size: 1.1rem;
+        gap: 6px;
+    }
+
+    /* BREADCRUMB FIX */
+    .breadcrumb {
+        font-size: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .header-actions {
+        gap: 10px;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+
+    .action-btn .badge {
+        width: 14px;
+        height: 14px;
+        font-size: 0.6rem;
+    }
+}
+
+
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+    background: rgba(0,24,55,0.2);
+    border-radius: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* circle */
+.toggle-circle {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ACTIVE STATE */
+.toggle-switch.active {
+    background: #3772ff;
+}
+
+/* MOVE CIRCLE */
+.toggle-switch.active .toggle-circle {
+    transform: translateX(24px);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 200px;
+    padding: 0 10px;
+}
+
+.bar {
+    flex: 1;                 /* ✅ responsive width */
+    border-radius: 8px 8px 0 0;
+    background: linear-gradient(to top, #3772ff, #5a8cff);
+}
+
+
+@media (max-width: 768px) {
+
+    .chart-bars {
+        gap: 6px;
+        padding: 0 5px;   /* ✅ reduce padding */
+    }
+
+    .bar {
+        min-width: 0;     /* ✅ prevent overflow */
+    }
+}
+
+@keyframes atomSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.atom-loader {
+    width: 80px;
+    height: 80px;
+    position: relative;
+}
+
+.atom-loader::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid #eaf1ff;
+    border-top-color: #3772ff;
+    border-radius: 50%;
+    animation: atomSpin 1s linear infinite;
+}
+
+.atom-loader::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: #3772ff;
+    border-radius: 50%;
+}
+
+/* ✅ ADD THIS */
+@keyframes atomSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.chart-placeholder {
+    width: 100%;
+    height: auto;              /* ✅ REMOVE fixed height */
+    padding: 20px;
+    display: block;            /* ❌ REMOVE flex */
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;     /* bars grow from bottom */
+    justify-content: space-between;
+    height: 200px;
+    gap: 10px;
+}
+.bar {
+    flex: 1;
+    min-height: 5px; /* ✅ IMPORTANT fix */
+    background: linear-gradient(to top, #3772ff, #5a8cff);
+    border-radius: 8px 8px 0 0;
+}
+
+/* Hover effect */
+.bar:hover {
+    transform: scaleY(1.05);
+}
+
+.chart-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.chart-labels span {
+    flex: 1;
+    text-align: center;
+}
+
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="atom-loader"></div>
+        <div style="color: var(--stackly-secondary-color); font-weight: 600;">Loading Research Portal...</div>
+    </div>
+
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+    <div class="dna-container" id="dnaContainer"></div>
+
+    <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="logo">
+    <img src="images/logo.webp" alt="Logo" class="logo-img">
+</a>
+        </div>
+
+
+        <div class="sidebar-menu">
+            <div class="menu-category">Research</div>
+            
+            <div class="menu-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+                <button class="menu-link">
+                    <i class="fas fa-th-large menu-icon"></i>
+                    <span class="menu-text">Dashboard</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="experiments" onclick="navigateTo('experiments')">
+                <button class="menu-link">
+                    <i class="fas fa-flask menu-icon"></i>
+                    <span class="menu-text">Experiments</span>
+                    <span class="menu-badge">12</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="samples" onclick="navigateTo('samples')">
+                <button class="menu-link">
+                    <i class="fas fa-vial menu-icon"></i>
+                    <span class="menu-text">Sample Management</span>
+                    <span class="menu-badge urgent">3</span>
+                </button>
+            </div>
+
+
+            <div class="menu-category">Laboratory</div>
+
+            <div class="menu-item" data-page="equipment" onclick="navigateTo('equipment')">
+                <button class="menu-link">
+                    <i class="fas fa-microscope menu-icon"></i>
+                    <span class="menu-text">Equipment</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="protocols" onclick="navigateTo('protocols')">
+                <button class="menu-link">
+                    <i class="fas fa-clipboard-list menu-icon"></i>
+                    <span class="menu-text">Protocols & SOPs</span>
+                </button>
+            </div>
+
+            <div class="menu-category">Collaboration</div>
+
+            <div class="menu-item" data-page="team" onclick="navigateTo('team')">
+                <button class="menu-link">
+                    <i class="fas fa-users menu-icon"></i>
+                    <span class="menu-text">Research Team</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="publications" onclick="navigateTo('publications')">
+                <button class="menu-link">
+                    <i class="fas fa-book menu-icon"></i>
+                    <span class="menu-text">Publications</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="grants" onclick="navigateTo('grants')">
+                <button class="menu-link">
+                    <i class="fas fa-dollar-sign menu-icon"></i>
+                    <span class="menu-text">Grants & Funding</span>
+                </button>
+            </div>
+
+            <div class="menu-category">Settings</div>
+
+            <div class="menu-item" data-page="settings" onclick="navigateTo('settings')">
+                <button class="menu-link">
+                    <i class="fas fa-cog menu-icon"></i>
+                    <span class="menu-text">Settings</span>
+                </button>
+            </div>
+          <div class="menu-item">
+    <button class="menu-link" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt menu-icon" style="color:#ff4757;"></i>
+        <span class="menu-text">Logout</span>
+    </button>
+</div>
+
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-profile" onclick="navigateTo('profile')">
+                <div class="user-avatar">DR</div>
+                <div class="user-info">
+                    <div class="user-name" id="displayEmail">user@email.com</div>
+                    <div class="user-role">Senior Researcher</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div>
+                    <h1 class="page-title" id="pageTitle">
+                        <i class="fas fa-th-large" style="color: var(--stackly-global-color);"></i>
+                        Research
+                    </h1>
+                </div>
+            </div>
+
+            <div class="header-right">
+           <div class="header-actions">
+
+    <a href="404-admin.html" class="action-btn">
+        <i class="fas fa-bell"></i>
+        <span class="badge">3</span>
+    </a>
+
+    <a href="404-admin.html" class="action-btn">
+        <i class="fas fa-envelope"></i>
+        <span class="badge">2</span>
+    </a>
+
+</div>
+            </div>
+        </header>
+
+        <!-- Content Sections -->
+        <div class="content">
+            <!-- DASHBOARD SECTION -->
+            <div class="content-section active" id="dashboard">
+                <div class="research-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue"><i class="fas fa-flask"></i></div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>3 new</span>
+                            </div>
+                        </div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Active Experiments</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green"><i class="fas fa-vial"></i></div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>85% processed</span>
+                            </div>
+                        </div>
+                        <div class="stat-value">248</div>
+                        <div class="stat-label">Samples in Queue</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                            <div class="stat-trend down">
+                                <i class="fas fa-arrow-down"></i>
+                                <span>2 due</span>
+                            </div>
+                        </div>
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Pending Protocols</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon red"><i class="fas fa-exclamation-circle"></i></div>
+                            <div class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>Requires attention</span>
+                            </div>
+                        </div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Equipment Alerts</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title"><i class="fas fa-flask" style="color: var(--stackly-global-color);"></i>Recent Experiments</h3>
+                            <button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    View All
+</button>
+                        </div>
+                        <div class="experiment-grid" style="grid-template-columns: 1fr;">
+                            <div class="experiment-card" onclick="window.location.href='404-researcher.html'">
+                                <div class="experiment-header">
+                                    <span class="experiment-id">EXP-2026-0042</span>
+                                    <span class="experiment-status active">Active</span>
+                                </div>
+                                <div class="experiment-title">CRISPR-Cas9 Gene Editing Efficiency Study</div>
+                                <div class="experiment-description">Comparative analysis of different gRNA designs for targeted gene knockout in mammalian cells.</div>
+                                <div class="experiment-meta">
+                                    <span><i class="fas fa-calendar"></i> Started: Mar 15, 2026</span>
+                                    <span><i class="fas fa-user"></i> Lead: Dr. Chen</span>
+                                </div>
+                                <div class="experiment-progress">
+                                    <div class="progress-header">
+                                        <span>Progress</span>
+                                        <span>75%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 75%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="experiment-card" onclick="window.location.href='404-researcher.html'">
+                                <div class="experiment-header">
+                                    <span class="experiment-id">EXP-2026-0038</span>
+                                    <span class="experiment-status pending">Pending Review</span>
+                                </div>
+                                <div class="experiment-title">Protein Expression Optimization in E. coli</div>
+                                <div class="experiment-description">Testing various induction conditions and media compositions for recombinant protein production.</div>
+                                <div class="experiment-meta">
+                                    <span><i class="fas fa-calendar"></i> Started: Mar 10, 2026</span>
+                                    <span><i class="fas fa-user"></i> Lead: Dr. Ross</span>
+                                </div>
+                                <div class="experiment-progress">
+                                    <div class="progress-header">
+                                        <span>Progress</span>
+                                        <span>90%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 90%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title"><i class="fas fa-bell" style="color: var(--stackly-global-color);"></i>Lab Alerts</h3>
+                        </div>
+                        <div class="timeline">
+                            <div class="timeline-item" style="animation-delay: 0s;">
+                                <div class="timeline-dot" style="background: #ff4757;"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-time">10 minutes ago</div>
+                                    <div class="timeline-text">
+                                        <strong>Freezer Temperature Alert</strong><br>
+                                        Ultra-low freezer #3 temperature rose to -75°C
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-item" style="animation-delay: 0.1s;">
+                                <div class="timeline-dot" style="background: #ffc107;"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-time">1 hour ago</div>
+                                    <div class="timeline-text">
+                                        <strong>Equipment Maintenance Due</strong><br>
+                                        Centrifuge #2 scheduled maintenance overdue
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-item" style="animation-delay: 0.2s;">
+                                <div class="timeline-dot" style="background: #2ed573;"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-time">3 hours ago</div>
+                                    <div class="timeline-text">
+                                        <strong>Sample Processing Complete</strong><br>
+                                        Batch #2847 ready for analysis
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-item" style="animation-delay: 0.3s;">
+                                <div class="timeline-dot" style="background: var(--stackly-global-color);"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-time">Yesterday</div>
+                                    <div class="timeline-text">
+                                        <strong>New Protocol Published</strong><br>
+                                        Updated RNA extraction SOP v2.3
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-chart-line" style="color: var(--stackly-global-color);"></i>Research Activity</h3>
+                    </div>
+        <div class="chart-container">
+    <div class="chart-placeholder">
+
+        <!-- Bars -->
+        <div class="chart-bars">
+            <div class="bar" style="height:60%"></div>
+            <div class="bar" style="height:75%"></div>
+            <div class="bar" style="height:45%"></div>
+            <div class="bar" style="height:90%"></div>
+            <div class="bar" style="height:80%"></div>
+            <div class="bar" style="height:95%"></div>
+            <div class="bar" style="height:70%"></div>
+        </div>
+
+        <!-- Labels -->
+        <div class="chart-labels">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+            <span>Sun</span>
+        </div>
+
+    </div>
+                </div>
+            </div>
+
+            <!-- EXPERIMENTS SECTION -->
+            <div class="content-section" id="experiments">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-flask" style="color: var(--stackly-global-color);"></i>All Experiments</h3>
+                        <div class="section-actions">
+                          <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-download"></i> Export
+</button>
+
+<button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-plus"></i> New Experiment
+</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <select class="filter-select" onchange="filterExperiments(this.value)">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                        <input type="text" class="search-input" placeholder="Search experiments..." onkeyup="searchExperiments(this.value)">
+                    </div>
+
+                    <div class="experiment-grid" id="experimentsGrid">
+                        <div class="experiment-card">
+                            <div class="experiment-header">
+                                <span class="experiment-id">EXP-2026-0042</span>
+                                <span class="experiment-status active">Active</span>
+                            </div>
+                            <div class="experiment-title">CRISPR-Cas9 Gene Editing Efficiency Study</div>
+                            <div class="experiment-description">Comparative analysis of different gRNA designs for targeted gene knockout in mammalian cells.</div>
+                            <div class="experiment-meta">
+                                <span><i class="fas fa-calendar"></i> Started: Mar 15, 2026</span>
+                                <span><i class="fas fa-user"></i> Lead: Dr. Chen</span>
+                                <span><i class="fas fa-vial"></i> 48 samples</span>
+                            </div>
+                            <div class="experiment-progress">
+                                <div class="progress-header">
+                                    <span>Progress</span>
+                                    <span>75%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%;"></div>
+                                </div>
+                            </div>
+                            <div class="experiment-actions">
+                                <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-eye"></i> View
+</button>
+
+<button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-edit"></i> Edit
+</button>
+                            </div>
+                        </div>
+
+                        <div class="experiment-card">
+                            <div class="experiment-header">
+                                <span class="experiment-id">EXP-2026-0041</span>
+                                <span class="experiment-status active">Active</span>
+                            </div>
+                            <div class="experiment-title">Western Blot Optimization Protocol</div>
+                            <div class="experiment-description">Testing various antibody concentrations and blocking conditions for improved signal detection.</div>
+                            <div class="experiment-meta">
+                                <span><i class="fas fa-calendar"></i> Started: Mar 12, 2026</span>
+                                <span><i class="fas fa-user"></i> Lead: Dr. Ross</span>
+                                <span><i class="fas fa-vial"></i> 24 samples</span>
+                            </div>
+                            <div class="experiment-progress">
+                                <div class="progress-header">
+                                    <span>Progress</span>
+                                    <span>60%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                            <div class="experiment-actions">
+                                <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-eye"></i> View
+</button>
+
+<button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-edit"></i> Edit
+</button>
+                            </div>
+                        </div>
+
+                        <div class="experiment-card">
+                            <div class="experiment-header">
+                                <span class="experiment-id">EXP-2026-0038</span>
+                                <span class="experiment-status pending">Pending Review</span>
+                            </div>
+                            <div class="experiment-title">Protein Expression Optimization in E. coli</div>
+                            <div class="experiment-description">Testing various induction conditions and media compositions for recombinant protein production.</div>
+                            <div class="experiment-meta">
+                                <span><i class="fas fa-calendar"></i> Started: Mar 10, 2026</span>
+                                <span><i class="fas fa-user"></i> Lead: Dr. Ross</span>
+                                <span><i class="fas fa-vial"></i> 36 samples</span>
+                            </div>
+                            <div class="experiment-progress">
+                                <div class="progress-header">
+                                    <span>Progress</span>
+                                    <span>90%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                            <div class="experiment-actions">
+                                <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-eye"></i> View
+</button>
+
+<button class="btn btn-success" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-check"></i> Submit
+</button>
+                            </div>
+                        </div>
+
+                        <div class="experiment-card">
+                            <div class="experiment-header">
+                                <span class="experiment-id">EXP-2026-0035</span>
+                                <span class="experiment-status completed">Completed</span>
+                            </div>
+                            <div class="experiment-title">qPCR Primer Validation Study</div>
+                            <div class="experiment-description">Validation of newly designed primers for gene expression analysis across different tissue types.</div>
+                            <div class="experiment-meta">
+                                <span><i class="fas fa-calendar"></i> Completed: Mar 5, 2026</span>
+                                <span><i class="fas fa-user"></i> Lead: Dr. Chen</span>
+                                <span><i class="fas fa-vial"></i> 96 samples</span>
+                            </div>
+                            <div class="experiment-progress">
+                                <div class="progress-header">
+                                    <span>Progress</span>
+                                    <span>100%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 100%; background: #2ed573;"></div>
+                                </div>
+                            </div>
+                            <div class="experiment-actions">
+                                <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-eye"></i> View
+</button>
+
+<button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-file-alt"></i> Report
+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pagination">
+                       <button class="page-btn" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-chevron-left"></i>
+</button>
+
+<button class="page-btn active" onclick="window.location.href='404-researcher.html'">1</button>
+<button class="page-btn" onclick="window.location.href='404-researcher.html'">2</button>
+<button class="page-btn" onclick="window.location.href='404-researcher.html'">3</button>
+
+<button class="page-btn" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-chevron-right"></i>
+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAMPLES SECTION -->
+            <div class="content-section" id="samples">
+                <div class="inventory-alert">
+                    <div class="inventory-alert-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="inventory-alert-content">
+                        <div class="inventory-alert-title">Sample Storage Alert</div>
+                        <div class="inventory-alert-text">3 samples approaching storage temperature limits. Immediate attention required.</div>
+                    </div>
+                    <button class="btn btn-danger" onclick="window.location.href='404-researcher.html'">
+    View Details
+</button>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-vial" style="color: var(--stackly-global-color);"></i>Sample Inventory</h3>
+                        <div class="section-actions">
+                            <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-print"></i> Print Labels
+</button>
+
+<button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-plus"></i> Add Sample
+</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <input type="text" class="search-input" 
+       placeholder="Search by ID or name..." 
+       onkeyup="searchSamples(this)">
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Sample ID</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Location</th>
+                                    <th>Quantity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="sample-cell">
+                                            <div class="sample-icon"><i class="fas fa-vial"></i></div>
+                                            <div class="sample-details">
+                                                <h4>SMP-2026-0156</h4>
+                                                <p>HeLa cells, passage 12</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>HeLa-GFP Cell Line</td>
+                                    <td>Cell Culture</td>
+                                    <td>Incubator #3</td>
+                                    <td>5 flasks</td>
+                                    <td><span class="experiment-status active">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;"
+        onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-eye"></i>
+</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="sample-cell">
+                                            <div class="sample-icon" style="background: rgba(255, 71, 87, 0.1); color: #ff4757;"><i class="fas fa-snowflake"></i></div>
+                                            <div class="sample-details">
+                                                <h4>SMP-2026-0142</h4>
+                                                <p>Liver tissue, patient #2847</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Human Liver Biopsy</td>
+                                    <td>Tissue</td>
+                                    <td>Freezer #2</td>
+                                    <td>12 blocks</td>
+                                    <td><span class="experiment-status pending">Check Temp</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;"
+        onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-eye"></i>
+</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="sample-cell">
+                                            <div class="sample-icon" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;"><i class="fas fa-dna"></i></div>
+                                            <div class="sample-details">
+                                                <h4>SMP-2026-0138</h4>
+                                                <p>Plasmid DNA, pET-28a</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Expression Vector DNA</td>
+                                    <td>DNA</td>
+                                    <td>Freezer #1</td>
+                                    <td>500 μL</td>
+                                    <td><span class="experiment-status active">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;"
+        onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-eye"></i>
+</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="sample-cell">
+                                            <div class="sample-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;"><i class="fas fa-tint"></i></div>
+                                            <div class="sample-details">
+                                                <h4>SMP-2026-0125</h4>
+                                                <p>Serum, batch #45</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Fetal Bovine Serum</td>
+                                    <td>Reagent</td>
+                                    <td>Freezer #1</td>
+                                    <td>4 bottles</td>
+                                    <td><span class="experiment-status active">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;"
+        onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-eye"></i>
+</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EQUIPMENT SECTION -->
+            <div class="content-section" id="equipment">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-microscope" style="color: var(--stackly-global-color);"></i>Equipment Status</h3>
+                        <div class="section-actions">
+                            <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-wrench"></i> Schedule Maintenance
+</button>
+
+<button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-calendar-plus"></i> Reserve
+</button>
+                        </div>
+                    </div>
+
+                    <div class="equipment-grid">
+                        <div class="equipment-card">
+                            <div class="equipment-header">
+                                <div class="equipment-icon"><i class="fas fa-microscope"></i></div>
+                                <div class="equipment-status"></div>
+                            </div>
+                            <div class="equipment-name">Confocal Microscope</div>
+                            <div class="equipment-location">Room 302 • Station A</div>
+                            <div class="equipment-metrics">
+                                <div class="equipment-metric">
+                                    <div class="equipment-metric-value">98%</div>
+                                    <div class="equipment-metric-label">Uptime</div>
+                                </div>
+                                <div class="equipment-metric">
+                                    <div class="equipment-metric-value">12h</div>
+                                    <div class="equipment-metric-label">Used Today</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 16px;"
+        onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-calendar-plus"></i> Book Now
+</button>
+                        </div>
+
+                        <div class="equipment-card">
+                            <div class="equipment-header">
+                                <div class="equipment-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fas fa-atom"></i></div>
+                                <div class="equipment-status maintenance"></div>
+                            </div>
+                            <div class="equipment-name">Flow Cytometer</div>
+                            <div class="equipment-location">Room 305 • Station B</div>
+                            <div class="equipment-metrics">
+                                <div class="equipment-metric">
+                                    <div class="equipment-metric-value">85%</div>
+                                    <div class="equipment-metric-label">Uptime</div>
+                                </div>
+                                <div class="equipment-metric">
+                                    <div class="equipment-metric-value" style="color: #ffc107;">Maint</div>
+                                    <div class="equipment-metric-label">Status</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-warning" style="width: 100%; margin-top: 16px;"
+        onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-clock"></i> Maintenance
+</button>
+                        </div>
+
+                        <div class="equipment-card">
+                            <div class="equipment-header">
+                                <div class="equipment-icon" style="background: rgba(255, 71, 87, 0.1); color: #ff4757;"><i class="fas fa-dna"></i></div>
+                                <div class="equipment-status offline"></div>
+                            </div>
+                            <div class="equipment-name">DNA Sequencer</div>
+                            <div class="equipment-location">Room 301 • Station C</div>
+                            <div class="equipment-metrics">
+                                <div class="equipment-metric">
+                                    <div class="equipment-metric-value" style="color: #ff4757;">Offline</div>
+                                    <div class="equipment-metric-label">Status</div>
+                                </div>
+                                <div class="equipment-metric">
+                                    <div class="equipment-metric-value">--</div>
+                                    <div class="equipment-metric-label">Next Avail</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger" style="width: 100%; margin-top: 16px;"
+        onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-exclamation-triangle"></i> Report Issue
+</button>
+                        </div>
+
+                        <div class="equipment-card">
+                            <div class="equipment-header">
+                                <div class="equipment-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;"><i class="fas fa-vials"></i></div>
+                                <div class="equipment-status"></div>
+                            </div>
+                            <div class="equipment-name">HPLC System</div>
+                            <div class="equipment-location">Room 304 • Station A</div>
+                            <div class="equipment-metrics">
+                                <div class="equipment-metric">
+                                    <div class="equipment-metric-value">95%</div>
+                                    <div class="equipment-metric-label">Uptime</div>
+                                </div>
+                                <div class="equipment-metric">
+                                    <div class="equipment-metric-value">6h</div>
+                                    <div class="equipment-metric-label">Used Today</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 16px;"
+        onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-calendar-plus"></i> Book Now
+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROTOCOLS SECTION -->
+            <div class="content-section" id="protocols">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-clipboard-list" style="color: var(--stackly-global-color);"></i>Standard Operating Procedures</h3>
+                        <button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-plus"></i> Create Protocol
+</button>
+                    </div>
+
+                    <div class="protocol-list">
+                        <div class="protocol-item" onclick="window.location.href='404-researcher.html'">
+                            <div class="protocol-icon"><i class="fas fa-dna"></i></div>
+                            <div class="protocol-info">
+                                <div class="protocol-name">DNA Extraction from Mammalian Cells</div>
+                                <div class="protocol-meta">Last updated: Mar 15, 2026 • Used 45 times</div>
+                            </div>
+                            <span class="protocol-version">v2.3</span>
+                        </div>
+
+                        <div class="protocol-item" onclick="window.location.href='404-researcher.html'">
+                            <div class="protocol-icon"><i class="fas fa-vial"></i></div>
+                            <div class="protocol-info">
+                                <div class="protocol-name">Cell Culture Passaging</div>
+                                <div class="protocol-meta">Last updated: Feb 28, 2026 • Used 128 times</div>
+                            </div>
+                            <span class="protocol-version">v1.8</span>
+                        </div>
+
+                        <div class="protocol-item" onclick="window.location.href='404-researcher.html'">
+                            <div class="protocol-icon"><i class="fas fa-microscope"></i></div>
+                            <div class="protocol-info">
+                                <div class="protocol-name">Immunofluorescence Staining</div>
+                                <div class="protocol-meta">Last updated: Mar 10, 2026 • Used 67 times</div>
+                            </div>
+                            <span class="protocol-version">v3.1</span>
+                        </div>
+
+                        <div class="protocol-item" onclick="window.location.href='404-researcher.html'">
+                            <div class="protocol-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="protocol-info">
+                                <div class="protocol-name">qPCR Standard Curve Setup</div>
+                                <div class="protocol-meta">Last updated: Jan 20, 2026 • Used 89 times</div>
+                            </div>
+                            <span class="protocol-version">v2.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sop-viewer" id="sopViewer" style="display: none;">
+                    <div class="sop-header">
+                        <div class="sop-title">DNA Extraction from Mammalian Cells</div>
+                        <div class="sop-meta">
+                            <span><i class="fas fa-user"></i> Author: Dr. Sarah Chen</span>
+                            <span><i class="fas fa-calendar"></i> Version: 2.3 (Mar 15, 2026)</span>
+                            <span><i class="fas fa-clock"></i> Duration: 2 hours</span>
+                        </div>
+                    </div>
+                    <div class="sop-content">
+                        <div class="sop-step">
+                            <div class="sop-step-number">1</div>
+                            <div>
+                                <strong>Cell Harvesting</strong>
+                                <p>Remove growth medium and wash cells with PBS. Add trypsin-EDTA and incubate at 37°C for 3-5 minutes.</p>
+                            </div>
+                        </div>
+                        <div class="sop-step">
+                            <div class="sop-step-number">2</div>
+                            <div>
+                                <strong>Cell Lysis</strong>
+                                <p>Add lysis buffer and incubate at room temperature for 10 minutes. Vortex gently every 2 minutes.</p>
+                            </div>
+                        </div>
+                        <div class="sop-step">
+                            <div class="sop-step-number">3</div>
+                            <div>
+                                <strong>DNA Precipitation</strong>
+                                <p>Add ice-cold ethanol and incubate at -20°C for 30 minutes. Centrifuge at 12,000g for 10 minutes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PUBLICATIONS SECTION -->
+            <div class="content-section" id="publications">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-book" style="color: var(--stackly-global-color);"></i>Publications & Manuscripts</h3>
+                        <button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-plus"></i> New Manuscript
+</button>
+                    </div>
+
+                    <div class="publication-card">
+                        <div class="publication-journal"><i class="fas fa-book-open"></i></div>
+                        <div class="publication-content">
+                            <div class="publication-title">Novel CRISPR-Cas9 Delivery System Using Lipid Nanoparticles</div>
+                            <div class="publication-authors">Chen S., Ross M., Watson E., et al.</div>
+                            <div class="publication-meta">
+                                <span><i class="fas fa-calendar"></i> Submitted: Feb 15, 2026</span>
+                                <span><i class="fas fa-folder"></i> Nature Biotechnology</span>
+                            </div>
+                        </div>
+                        <span class="publication-status">Under Review</span>
+                    </div>
+
+                    <div class="publication-card">
+                        <div class="publication-journal" style="background: linear-gradient(135deg, #2ed573, #7bed9f);"><i class="fas fa-book-open"></i></div>
+                        <div class="publication-content">
+                            <div class="publication-title">Optimized Protocol for High-Efficiency Protein Expression</div>
+                            <div class="publication-authors">Ross M., Chen S., Park L.</div>
+                            <div class="publication-meta">
+                                <span><i class="fas fa-calendar"></i> Published: Jan 10, 2026</span>
+                                <span><i class="fas fa-folder"></i> Journal of Biotechnology</span>
+                            </div>
+                        </div>
+                        <span class="publication-status" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;">Published</span>
+                    </div>
+
+                    <div class="publication-card">
+                        <div class="publication-journal" style="background: linear-gradient(135deg, #ffc107, #ffeaa7);"><i class="fas fa-edit"></i></div>
+                        <div class="publication-content">
+                            <div class="publication-title">Comparative Analysis of Gene Editing Tools</div>
+                            <div class="publication-authors">Watson E., Chen S., Wilson J., et al.</div>
+                            <div class="publication-meta">
+                                <span><i class="fas fa-calendar"></i> Draft</span>
+                                <span><i class="fas fa-percentage"></i> 65% Complete</span>
+                            </div>
+                        </div>
+                        <span class="publication-status" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">In Progress</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRANTS SECTION -->
+            <div class="content-section" id="grants">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-dollar-sign" style="color: var(--stackly-global-color);"></i>Active Grants</h3>
+                        <button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-plus"></i> Apply for Grant
+</button>
+                    </div>
+
+                    <div class="grant-card">
+                        <div class="grant-header">
+                            <div class="grant-title">NIH R01: Novel Gene Therapy Approaches</div>
+                            <div class="grant-amount">$2.4M</div>
+                        </div>
+                        <div class="grant-agency">National Institutes of Health (NIH)</div>
+                        <div class="grant-timeline">
+                            <div class="grant-progress">
+                                <div class="grant-progress-fill" style="width: 65%;"></div>
+                            </div>
+                            <span style="font-size: 0.9rem; color: rgba(0,24,55,0.6);">Year 2 of 5</span>
+                        </div>
+                        <div style="display: flex; gap: 16px; font-size: 0.9rem; color: rgba(0,24,55,0.6);">
+                            <span><i class="fas fa-calendar"></i> Start: Jan 2024</span>
+                            <span><i class="fas fa-calendar-check"></i> End: Dec 2028</span>
+                            <span><i class="fas fa-user"></i> PI: Dr. Sarah Chen</span>
+                        </div>
+                    </div>
+
+                    <div class="grant-card">
+                        <div class="grant-header">
+                            <div class="grant-title">NSF CAREER: Synthetic Biology Tools</div>
+                            <div class="grant-amount">$875K</div>
+                        </div>
+                        <div class="grant-agency">National Science Foundation</div>
+                        <div class="grant-timeline">
+                            <div class="grant-progress">
+                                <div class="grant-progress-fill" style="width: 30%;"></div>
+                            </div>
+                            <span style="font-size: 0.9rem; color: rgba(0,24,55,0.6);">Year 1 of 5</span>
+                        </div>
+                        <div style="display: flex; gap: 16px; font-size: 0.9rem; color: rgba(0,24,55,0.6);">
+                            <span><i class="fas fa-calendar"></i> Start: Sep 2025</span>
+                            <span><i class="fas fa-calendar-check"></i> End: Aug 2030</span>
+                            <span><i class="fas fa-user"></i> PI: Dr. Michael Ross</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEAM SECTION -->
+            <div class="content-section" id="team">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-users" style="color: var(--stackly-global-color);"></i>Research Team</h3>
+                       <button class="btn btn-primary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-user-plus"></i> Invite Member
+</button>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-avatar">SC</div>
+                        <div class="member-info">
+                            <div class="member-name">Dr. Sarah Chen</div>
+                            <div class="member-role">Principal Investigator • Molecular Biology</div>
+                        </div>
+                        <div class="member-status">Online</div>
+                        <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-envelope"></i> Message
+</button>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-avatar" style="background: linear-gradient(135deg, #2ed573, #7bed9f);">MR</div>
+                        <div class="member-info">
+                            <div class="member-name">Dr. Michael Ross</div>
+                            <div class="member-role">Co-Investigator • Biochemistry</div>
+                        </div>
+                        <div class="member-status">In Lab</div>
+                       <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-envelope"></i> Message
+</button>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-avatar" style="background: linear-gradient(135deg, #ffc107, #ffeaa7);">EW</div>
+                        <div class="member-info">
+                            <div class="member-name">Emily Watson, PhD</div>
+                            <div class="member-role">Postdoctoral Researcher • Cell Biology</div>
+                        </div>
+                        <div class="member-status" style="color: #ff4757;">Offline</div>
+                        <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-envelope"></i> Message
+</button>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-avatar" style="background: linear-gradient(135deg, #9b59b6, #bb8fce);">LP</div>
+                        <div class="member-info">
+                            <div class="member-name">Lisa Park</div>
+                            <div class="member-role">Graduate Student • Bioinformatics</div>
+                        </div>
+                        <div class="member-status">Online</div>
+                        <button class="btn btn-secondary" onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-envelope"></i> Message
+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS SECTION -->
+            <div class="content-section" id="settings">
+                <div class="section-card">
+                    <div style="margin-bottom: 32px;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--stackly-secondary-color); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--stackly-light-color);">Lab Preferences</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--stackly-light-color);">
+                            <div>
+                                <div style="font-weight: 600; color: var(--stackly-secondary-color); margin-bottom: 4px;">Temperature Alerts</div>
+                                <div style="font-size: 0.9rem; color: rgba(0,24,55,0.6);">Notify when equipment temperature deviates</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')">
+    <div class="toggle-circle"></div>
+</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--stackly-light-color);">
+                            <div>
+                                <div style="font-weight: 600; color: var(--stackly-secondary-color); margin-bottom: 4px;">Experiment Reminders</div>
+                                <div style="font-size: 0.9rem; color: rgba(0,24,55,0.6);">Daily summary of ongoing experiments</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')">
+    <div class="toggle-circle"></div>
+</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--stackly-secondary-color); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--stackly-light-color);">Data & Privacy</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--stackly-light-color);">
+                            <div>
+                                <div style="font-weight: 600; color: var(--stackly-secondary-color); margin-bottom: 4px;">Auto-Save Experiment Notes</div>
+                                <div style="font-size: 0.9rem; color: rgba(0,24,55,0.6);">Save notes every 30 seconds</div>
+                            </div>
+                           <div class="toggle-switch active" onclick="this.classList.toggle('active')">
+    <div class="toggle-circle"></div>
+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                createDNAHelix();
+            }, 1500);
+        });
+
+        function createDNAHelix() {
+            const container = document.getElementById('dnaContainer');
+            for (let i = 0; i < 5; i++) {
+                const strand = document.createElement('div');
+                strand.className = 'dna-strand';
+                strand.style.left = (i * 25) + '%';
+                strand.style.animationDelay = (i * 2) + 's';
+                container.appendChild(strand);
+            }
+        }
+
+        // Navigation
+        function navigateTo(page) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(page);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === page) {
+                    item.classList.add('active');
+                }
+            });
+            
+            updateHeader(page);
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            
+            const pageNames = {
+                dashboard: 'Research Dashboard',
+                experiments: 'Experiments',
+                samples: 'Sample Management',
+                equipment: 'Equipment',
+                protocols: 'Protocols & SOPs',
+                publications: 'Publications',
+                grants: 'Grants & Funding',
+                team: 'Research Team',
+                settings: 'Settings',
+                profile: 'My Profile'
+            };
+            showToast(`Navigated to ${pageNames[page] || page}`, 'success');
+        }
+
+        function updateHeader(page) {
+            const titles = {
+                dashboard: { title: 'Research', icon: 'th-large', breadcrumb: 'Dashboard' },
+                experiments: { title: 'Experiments', icon: 'flask', breadcrumb: 'Experiments' },
+                samples: { title: 'Sample Management', icon: 'vial', breadcrumb: 'Sample Management' },
+                equipment: { title: 'Equipment', icon: 'microscope', breadcrumb: 'Equipment' },
+                protocols: { title: 'Protocols & SOPs', icon: 'clipboard-list', breadcrumb: 'Protocols & SOPs' },
+                publications: { title: 'Publications', icon: 'book', breadcrumb: 'Publications' },
+                grants: { title: 'Grants & Funding', icon: 'dollar-sign', breadcrumb: 'Grants & Funding' },
+                team: { title: 'Research Team', icon: 'users', breadcrumb: 'Research Team' },
+                settings: { title: 'Settings', icon: 'cog', breadcrumb: 'Settings' },
+                profile: { title: 'My Profile', icon: 'user-circle', breadcrumb: 'Profile' }
+            };
+            
+            const info = titles[page] || titles.dashboard;
+            document.getElementById('pageTitle').innerHTML = `<i class="fas fa-${info.icon}" style="color: var(--stackly-global-color);"></i>${info.title}`;
+            document.getElementById('breadcrumb').innerHTML = `
+                <a onclick="navigateTo('dashboard')">Home</a>
+                <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
+                <span>${info.breadcrumb}</span>
+            `;
+        }
+
+        // Sidebar Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('toggleIcon');
+            sidebar.classList.toggle('collapsed');
+            icon.classList.toggle('fa-chevron-left');
+            icon.classList.toggle('fa-chevron-right');
+        }
+
+        function toggleMobileSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+        }
+
+        function toggleSubmenu(item) {
+            item.classList.toggle('open');
+        }
+
+        // Modal Functions
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+            
+            const configs = {
+                'new-experiment': {
+                    title: 'Create New Experiment',
+                    content: `
+                        <form onsubmit="event.preventDefault(); closeModal(); showToast('Experiment created successfully!', 'success');">
+                            <div class="form-group">
+                                <label class="form-label">Experiment Title</label>
+                                <input type="text" class="form-input" placeholder="Enter experiment title" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Type</label>
+                                    <select class="form-input">
+                                        <option>Molecular Biology</option>
+                                        <option>Cell Culture</option>
+                                        <option>Biochemical</option>
+                                        <option>Genomic</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Priority</label>
+                                    <select class="form-input">
+                                        <option>Low</option>
+                                        <option>Medium</option>
+                                        <option>High</option>
+                                        <option>Critical</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-textarea" placeholder="Describe the experiment objectives..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Expected Duration</label>
+                                    <select class="form-input">
+                                        <option>1 week</option>
+                                        <option>2 weeks</option>
+                                        <option>1 month</option>
+                                        <option>3 months</option>
+                                        <option>6 months</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-plus"></i> Create Experiment
+                            </button>
+                        </form>
+                    `
+                },
+                'record-data': {
+                    title: 'Record Experimental Data',
+                    content: `
+                        <form onsubmit="event.preventDefault(); closeModal(); showToast('Data recorded successfully!', 'success');">
+                            <div class="form-group">
+                                <label class="form-label">Select Experiment</label>
+                                <select class="form-input">
+                                    <option>EXP-2026-0042 - CRISPR-Cas9 Study</option>
+                                    <option>EXP-2026-0041 - Western Blot Optimization</option>
+                                    <option>EXP-2026-0038 - Protein Expression</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Observation Notes</label>
+                                <textarea class="form-textarea" placeholder="Record your observations..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Upload Files</label>
+                                <input type="file" class="form-input" multiple>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-save"></i> Save Data
+                            </button>
+                        </form>
+                    `
+                },
+                'add-sample': {
+                    title: 'Add New Sample',
+                    content: `
+                        <form onsubmit="event.preventDefault(); closeModal(); showToast('Sample added to inventory!', 'success');">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Sample Name</label>
+                                    <input type="text" class="form-input" placeholder="Enter sample name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Sample Type</label>
+                                    <select class="form-input">
+                                        <option>Cell Culture</option>
+                                        <option>Tissue</option>
+                                        <option>Blood</option>
+                                        <option>DNA/RNA</option>
+                                        <option>Protein</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="text" class="form-input" placeholder="e.g., 5 flasks">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Storage Location</label>
+                                    <select class="form-input">
+                                        <option>Freezer #1 (-20°C)</option>
+                                        <option>Freezer #2 (-80°C)</option>
+                                        <option>Freezer #3 (Liquid N2)</option>
+                                        <option>Incubator #1</option>
+                                        <option>Refrigerator #1</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Notes</label>
+                                <textarea class="form-textarea" placeholder="Additional information..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-plus"></i> Add Sample
+                            </button>
+                        </form>
+                    `
+                }
+            };
+            
+            const config = configs[type] || configs['new-experiment'];
+            title.textContent = config.title;
+            content.innerHTML = config.content;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function closeModalOnOverlay(event) {
+            if (event.target === event.currentTarget) {
+                closeModal();
+            }
+        }
+
+        // Action Functions
+        function viewExperiment(id) {
+            showToast(`Loading experiment EXP-2026-00${40 + id}...`, 'info');
+        }
+
+        function editExperiment(id) {
+            showToast(`Opening experiment editor #${id}...`, 'info');
+            openModal('new-experiment');
+        }
+
+        function submitForReview(id) {
+            showToast('Experiment submitted for review!', 'success');
+        }
+
+        function generateReport(id) {
+            showToast('Generating PDF report...', 'info');
+            setTimeout(() => showToast('Report downloaded!', 'success'), 1500);
+        }
+
+        function exportExperiments() {
+            showToast('Exporting experiment data...', 'info');
+            setTimeout(() => showToast('Export complete!', 'success'), 1500);
+        }
+
+        function filterExperiments(filter) {
+            showToast(`Filtering by: ${filter}`, 'info');
+        }
+
+        function searchExperiments(query) {
+            if (query.length > 2) {
+                showToast(`Searching for: ${query}`, 'info');
+            }
+        }
+
+        function viewAlerts() {
+            showToast('Opening temperature monitoring...', 'warning');
+        }
+
+        function printLabels() {
+            showToast('Sending to label printer...', 'info');
+        }
+
+        function scheduleMaintenance() {
+            showToast('Opening maintenance scheduler...', 'info');
+        }
+
+        function reserveEquipment() {
+            showToast('Opening equipment reservation...', 'info');
+        }
+
+        function viewProtocol(id) {
+            document.getElementById('sopViewer').style.display = 'block';
+            showToast(`Loading protocol details...`, 'info');
+            document.getElementById('sopViewer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showNotifications() {
+            showToast('You have 5 new notifications', 'info');
+        }
+
+        function showLabAlerts() {
+            showToast('2 lab alerts require attention', 'warning');
+        }
+
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                showToast(`Searching: ${event.target.value}`, 'info');
+            }
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'times-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            const colors = {
+                success: '#2ed573',
+                error: '#ff4757',
+                warning: '#ffc107',
+                info: '#3772ff'
+            };
+            
+            toast.innerHTML = `
+                <i class="fas fa-${icons[type]}" style="color: ${colors[type]}; font-size: 1.2rem;"></i>
+                <span style="font-weight: 500; color: var(--stackly-secondary-color);">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+
+        <script>
+document.addEventListener("click", function (e) {
+    const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.querySelector(".mobile-toggle");
+
+    // Only for mobile view
+    if (window.innerWidth <= 768) {
+
+        // If sidebar is open
+        if (sidebar.classList.contains("mobile-open")) {
+
+            // Click outside sidebar & not on toggle button
+            if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove("mobile-open");
+            }
+        }
+    }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const email = localStorage.getItem("userEmail");
+    const loginTime = localStorage.getItem("loginTime");
+
+    if (email) {
+        document.getElementById("displayEmail").innerText = email;
+    }
+
+    if (loginTime) {
+        document.getElementById("loginTime").innerText = "Logged in: " + loginTime;
+    }
+
+});
+</script>
+
+<script>
+function logoutUser() {
+    // Clear stored data
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("loginTime");
+    localStorage.removeItem("userRole");
+
+    // Redirect to login page
+    window.location.href = "login.html";
+}
+</script>
+
+<script>
+function filterExperiments(status) {
+    const cards = document.querySelectorAll('.experiment-card');
+
+    cards.forEach(card => {
+        const statusElement = card.querySelector('.experiment-status');
+
+        // ✅ Use CLASS instead of text (BEST PRACTICE)
+        const cardStatusClass = statusElement.classList;
+
+        if (status === "all") {
+            card.style.display = "block";
+        } 
+        else if (cardStatusClass.contains(status)) {
+            card.style.display = "block";
+        } 
+        else {
+            card.style.display = "none";
+        }
+    });
+}
+</script>
+
+
+<script>
+function searchExperiments(searchValue) {
+    const cards = document.querySelectorAll('.experiment-card');
+    searchValue = searchValue.toLowerCase();
+
+    cards.forEach(card => {
+        const title = card.querySelector('.experiment-title').innerText.toLowerCase();
+        const desc = card.querySelector('.experiment-description').innerText.toLowerCase();
+
+        if (title.includes(searchValue) || desc.includes(searchValue)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+</script>
+
+<script>
+function searchSamples(input) {
+    const filter = input.value.toLowerCase();
+
+    // ✅ Find closest section (so only this table works)
+    const section = input.closest('.section-card') || document;
+
+    const rows = section.querySelectorAll(".data-table tbody tr");
+
+    rows.forEach(row => {
+
+        // Get specific columns
+        const id = row.querySelector(".sample-details h4").innerText.toLowerCase();
+        const name = row.children[1].innerText.toLowerCase();
+        const type = row.children[2].innerText.toLowerCase();
+        const location = row.children[3].innerText.toLowerCase();
+
+        if (
+            id.includes(filter) ||
+            name.includes(filter) ||
+            type.includes(filter) ||
+            location.includes(filter)
+        ) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+</script>
+
+
+</body>
+</html>

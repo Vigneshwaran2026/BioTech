@@ -1,0 +1,4045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioTech Patient Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --stackly-global-color: #3772ff;
+            --stackly-global-color-rgb: 55, 114, 255;
+            --stackly-secondary-color: #001837;
+            --stackly-secondary-color-rgb: 0, 24, 55;
+            --stackly-light-color: #eaf1ff;
+            --stackly-white-color: #ffffff;
+            --stackly-white-color-rgb: 255, 255, 255;
+            --stackly-blackish-color: #011938;
+            --stackly-blackish-color-rgb: 1, 25, 56;
+            --stackly-link-color-normal: #001837;
+            --stackly-link-color-hover: #3772ff;
+            
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+            --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--stackly-light-color) 0%, #ffffff 50%, var(--stackly-light-color) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(55, 114, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+          /* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--stackly-secondary-color);
+    z-index: 1000;
+    transition: var(--transition);
+
+    display: flex;              /* ✅ IMPORTANT */
+    flex-direction: column;     /* ✅ IMPORTANT */
+}
+.sidebar-menu {
+    flex: 1;              /* take remaining space */
+    overflow-y: auto;     /* scroll if needed */
+    padding: 20px 0;
+}
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--stackly-white-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--stackly-global-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .logo-text {
+            white-space: nowrap;
+            opacity: 1;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--stackly-white-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .toggle-btn:hover {
+            background: rgba(55, 114, 255, 0.2);
+            color: var(--stackly-global-color);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-category {
+            padding: 0 20px 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-category {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .menu-item {
+            position: relative;
+            margin: 4px 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .menu-item.active {
+            background: var(--stackly-global-color);
+        }
+
+        .menu-item:hover:not(.active) {
+            background: rgba(55, 114, 255, 0.1);
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            gap: 12px;
+            width: 100%;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .menu-item.active .menu-link {
+            color: var(--stackly-white-color);
+        }
+
+        .menu-link:hover {
+            color: var(--stackly-white-color);
+        }
+
+        .menu-icon {
+            font-size: 1.3rem;
+            min-width: 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .menu-text {
+            white-space: nowrap;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .menu-badge {
+            margin-left: auto;
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 4px;
+            min-width: 8px;
+            height: 8px;
+            font-size: 0;
+        }
+
+        .menu-arrow {
+            margin-left: auto;
+            transition: var(--transition);
+        }
+
+        .menu-item.has-submenu.open .menu-arrow {
+            transform: rotate(90deg);
+        }
+
+        .sidebar.collapsed .menu-arrow {
+            display: none;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-item.open .submenu {
+            max-height: 300px;
+        }
+
+        .submenu-item {
+            padding: 12px 20px 12px 56px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .submenu-item:hover, .submenu-item.active {
+            color: var(--stackly-white-color);
+            background: rgba(55, 114, 255, 0.1);
+            padding-left: 60px;
+        }
+
+        .sidebar.collapsed .submenu {
+            display: none;
+        }
+
+        /* User Profile in Sidebar */
+     .sidebar-footer {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    position: relative;   /* ✅ REMOVE absolute */
+}
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--stackly-white-color);
+            font-weight: 600;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .user-info {
+            opacity: 0;
+            width: 0;
+        }
+
+        .user-name {
+            color: var(--stackly-white-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .user-role {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background: var(--stackly-white-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 2px 20px rgba(0, 24, 55, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .breadcrumb a {
+            color: var(--stackly-global-color);
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Emergency Button */
+        .emergency-btn {
+            background: linear-gradient(135deg, #ff4757, #ff3344);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: emergencyPulse 2s infinite;
+            transition: var(--transition);
+        }
+
+        @keyframes emergencyPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+        }
+
+        .emergency-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Search Box */
+        .search-container {
+            position: relative;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--stackly-light-color);
+            border-radius: 12px;
+            padding: 10px 16px;
+            width: 280px;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--stackly-global-color);
+            background: var(--stackly-white-color);
+            box-shadow: 0 0 0 4px rgba(55, 114, 255, 0.1);
+        }
+
+        .search-box i {
+            color: rgba(0, 24, 55, 0.4);
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+            color: var(--stackly-secondary-color);
+        }
+
+        .search-box input::placeholder {
+            color: rgba(0, 24, 55, 0.4);
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-btn {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(55, 114, 255, 0.3);
+        }
+
+        .action-btn .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .welcome-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 24px;
+        }
+
+        .welcome-stat {
+            text-align: center;
+        }
+
+        .welcome-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .welcome-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Health Cards Grid */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .health-card {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .health-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(55, 114, 255, 0.15);
+        }
+
+        .health-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .health-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(55, 114, 255, 0.1);
+            color: var(--stackly-global-color);
+        }
+
+        .health-card-icon.heart {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+
+        .health-card-icon.temp {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .health-card-icon.oxygen {
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        .health-card-icon.glucose {
+            background: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+        }
+
+        .health-card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .health-card-label {
+            color: rgba(0, 24, 55, 0.6);
+            font-size: 0.95rem;
+        }
+
+        .health-card-trend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .trend-up { color: #2ed573; }
+        .trend-down { color: #ff4757; }
+        .trend-stable { color: #ffc107; }
+
+        /* Mini Chart */
+        .mini-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 40px;
+            margin-top: 16px;
+        }
+
+        .mini-bar {
+            flex: 1;
+            background: rgba(55, 114, 255, 0.2);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .mini-bar:hover {
+            background: var(--stackly-global-color);
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(55, 114, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background: #d4e3ff;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: var(--stackly-white-color);
+        }
+
+        .btn-danger:hover {
+            background: #ff3344;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        .btn-success {
+            background: #2ed573;
+            color: var(--stackly-white-color);
+        }
+
+        .btn-success:hover {
+            background: #26b965;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(46, 213, 115, 0.4);
+        }
+
+        /* Appointment Cards */
+        .appointment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .appointment-card {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: var(--stackly-light-color);
+            border-radius: 16px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .appointment-card:hover {
+            background: rgba(55, 114, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .appointment-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 70px;
+            padding: 12px;
+            background: var(--stackly-white-color);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 24, 55, 0.05);
+        }
+
+        .appointment-day {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--stackly-global-color);
+            line-height: 1;
+        }
+
+        .appointment-month {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .appointment-details {
+            flex: 1;
+        }
+
+        .appointment-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .appointment-info {
+            display: flex;
+            gap: 16px;
+            color: rgba(0, 24, 55, 0.6);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .appointment-info span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .appointment-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-cancelled {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+
+        /* Test Results */
+.test-result {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    gap: 12px;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .test-result {
+        grid-template-columns: 1fr;
+    }
+}
+
+        .test-result:last-child {
+            border-bottom: none;
+        }
+
+        .test-result:hover {
+            background: rgba(55, 114, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .test-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(55, 114, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--stackly-global-color);
+            font-size: 1.25rem;
+        }
+
+        .test-details {
+            flex: 1;
+        }
+
+        .test-name {
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .test-date {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .test-status {
+            text-align: right;
+        }
+
+        .test-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .test-range {
+            font-size: 0.8rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        /* Medication Cards */
+        .medication-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .medication-card {
+            background: var(--stackly-white-color);
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 16px;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .medication-card:hover {
+            border-color: var(--stackly-global-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(55, 114, 255, 0.1);
+        }
+
+        .medication-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .medication-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .medication-dosage {
+            color: rgba(0, 24, 55, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .medication-schedule {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .schedule-pill {
+            padding: 6px 12px;
+            background: var(--stackly-light-color);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+        }
+
+        .schedule-pill.taken {
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        .medication-progress {
+            margin-bottom: 16px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--stackly-light-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--stackly-global-color), #5a8cff);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--stackly-light-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+            animation: fadeInLeft 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--stackly-global-color);
+            border: 3px solid var(--stackly-white-color);
+            box-shadow: 0 0 0 3px var(--stackly-global-color);
+        }
+
+        .timeline-content {
+            background: var(--stackly-light-color);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: rgba(0, 24, 55, 0.6);
+            margin-bottom: 4px;
+        }
+
+        .timeline-text {
+            font-size: 0.95rem;
+            color: var(--stackly-secondary-color);
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 24, 55, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 32px;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.9) translateY(20px);
+            transition: var(--transition);
+            box-shadow: 0 25px 50px rgba(0, 24, 55, 0.2);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: #ff4757;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--stackly-global-color);
+            box-shadow: 0 0 0 4px rgba(55, 114, 255, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--stackly-white-color);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 24, 55, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+            border-left: 4px solid var(--stackly-global-color);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success { border-left-color: #2ed573; }
+        .toast.error { border-left-color: #ff4757; }
+        .toast.warning { border-left-color: #ffc107; }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--stackly-white-color);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .heartbeat-loader {
+            width: 60px;
+            height: 60px;
+            position: relative;
+        }
+
+        .heartbeat-loader::before {
+            content: '❤';
+            position: absolute;
+            font-size: 60px;
+            color: var(--stackly-global-color);
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+        }
+
+        /* Emergency Modal */
+        .emergency-modal .modal {
+            max-width: 600px;
+            border: 3px solid #ff4757;
+        }
+
+        .emergency-contacts {
+            display: grid;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .emergency-contact {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: rgba(255, 71, 87, 0.05);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 71, 87, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .emergency-contact:hover {
+            background: rgba(255, 71, 87, 0.1);
+            transform: translateX(5px);
+        }
+
+        .emergency-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ff4757;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .emergency-info {
+            flex: 1;
+        }
+
+        .emergency-name {
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .emergency-number {
+            color: #ff4757;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* Chat Widget */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--stackly-global-color);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(55, 114, 255, 0.4);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 24, 55, 0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: var(--stackly-global-color);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .chat-input-area {
+            padding: 16px;
+            border-top: 1px solid var(--stackly-light-color);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 25px;
+            outline: none;
+        }
+
+        .chat-send {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--stackly-global-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .health-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .welcome-stats {
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar.collapsed + .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-toggle {
+                display: flex !important;
+            }
+            
+            .health-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-stats {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .emergency-btn span {
+                display: none;
+            }
+            
+            .chat-window {
+                width: calc(100vw - 40px);
+                right: -10px;
+            }
+        }
+
+        .mobile-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--stackly-light-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--stackly-global-color);
+            border-radius: 4px;
+        }
+
+        /* Document Cards */
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .document-card {
+            background: var(--stackly-white-color);
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .document-card:hover {
+            border-color: var(--stackly-global-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(55, 114, 255, 0.1);
+        }
+
+        .document-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(55, 114, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.5rem;
+            color: var(--stackly-global-color);
+        }
+
+        .document-name {
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .document-date {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        /* Bill Cards */
+        .bill-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: var(--stackly-light-color);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+
+        .bill-card:hover {
+            background: rgba(55, 114, 255, 0.1);
+        }
+
+        .bill-info h4 {
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .bill-info p {
+            color: rgba(0, 24, 55, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .bill-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .bill-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Insurance Card */
+        .insurance-card {
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insurance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .insurance-provider {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .insurance-number {
+            font-size: 1.25rem;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .insurance-details {
+            display: flex;
+            gap: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .insurance-detail {
+            text-align: center;
+        }
+
+        .insurance-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .insurance-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Prescription Table */
+        .prescription-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .prescription-table th {
+            text-align: left;
+            padding: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(0, 24, 55, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--stackly-light-color);
+        }
+
+        .prescription-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--stackly-light-color);
+        }
+
+        .prescription-table tr:hover {
+            background: rgba(55, 114, 255, 0.03);
+        }
+
+        .prescription-name {
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+        }
+
+        .prescription-instruction {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        /* Vaccination Record */
+        .vaccine-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: var(--stackly-white-color);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(0, 24, 55, 0.05);
+        }
+
+        .vaccine-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(46, 213, 115, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2ed573;
+            font-size: 1.25rem;
+        }
+
+        .vaccine-info {
+            flex: 1;
+        }
+
+        .vaccine-name {
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .vaccine-date {
+            font-size: 0.9rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .vaccine-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        /* Family Members */
+        .family-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .family-card {
+            background: var(--stackly-white-color);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .family-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(55, 114, 255, 0.15);
+        }
+
+        .family-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .family-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .family-relation {
+            color: rgba(0, 24, 55, 0.6);
+            font-size: 0.9rem;
+        }
+
+
+               .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* center logo */
+    width: 100%;
+}
+
+.logo-img {
+    width: auto;
+    height: 62px;
+    object-fit: contain;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+/* Hover effect */
+.logo:hover .logo-img {
+    transform: scale(1.1);
+}
+
+
+@media (max-width: 768px) {
+
+    /* Fix main overflow */
+    body {
+        overflow-x: hidden;
+    }
+
+    .main-content,
+    .content,
+    .chart-container {
+        overflow-x: hidden;
+    }
+
+    /* Fix chart bars */
+    .chart-bars {
+        display: flex;
+        justify-content: space-between;
+        gap: 4px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .big-bar {
+        flex: 1;            /* ✅ auto fit */
+        min-width: 0;       /* ✅ prevent overflow */
+        max-width: 100%;
+    }
+
+    /* Prevent container overflow */
+    .chart-placeholder {
+        width: 100%;
+        overflow: hidden;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .calendar-grid {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px; /* reduce spacing */
+    }
+
+    .calendar-day-header {
+        font-size: 0.7rem;
+        padding: 6px 0;
+    }
+
+    .calendar-day {
+        font-size: 0.75rem;
+        padding: 8px 0;
+        aspect-ratio: auto;   /* ✅ remove square force */
+        height: 32px;         /* ✅ fixed height */
+    }
+
+    /* Fix section header buttons overflow */
+    .section-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .section-actions .btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    /* Prevent full section overflow */
+    .section-card {
+        overflow-x: hidden;
+    }
+}
+
+.chart-container {
+    width: 100%;
+}
+
+.chart-placeholder {
+    height: 250px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+.bar-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.chart-placeholder {
+    height: 250px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;   /* ✅ VERY IMPORTANT */
+}
+
+.big-bar {
+    flex: 1;
+    margin: 0 5px;
+    background: linear-gradient(180deg, #3772ff, #5a8cff);
+    border-radius: 6px;
+    display: block;          /* ✅ IMPORTANT FIX */
+}
+
+.big-bar:hover {
+    transform: scaleY(1.1);
+}
+
+.bar-group span {
+    font-size: 0.8rem;
+    color: rgba(0,24,55,0.6);
+}
+
+
+@media (max-width: 768px) {
+
+    .chart-placeholder {
+        height: 180px;
+    }
+
+    .chart-bars {
+        gap: 6px;
+    }
+
+    .big-bar {
+        max-width: 20px;
+    }
+
+    .bar-group span {
+        font-size: 0.7rem;
+    }
+}
+
+/* ===== SETTINGS CONTAINER ===== */
+.section-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+}
+
+/* ===== SECTION ===== */
+.settings-section {
+    margin-bottom: 30px;
+}
+
+.settings-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #1e293b;
+}
+
+/* ===== ITEM ===== */
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 18px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    background: #f8fafc;
+}
+
+.settings-item:hover {
+    background: #eef2ff;
+    transform: translateY(-2px);
+}
+
+/* ===== LABELS ===== */
+.settings-label {
+    font-weight: 500;
+    color: #111827;
+}
+
+.settings-description {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* ===== TOGGLE SWITCH ===== */
+.toggle-switch {
+    width: 45px;
+    height: 24px;
+    background: #d1d5db;
+    border-radius: 50px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-switch::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 4px;
+    transition: 0.3s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* ACTIVE STATE */
+.toggle-switch.active {
+    background: #6366f1;
+}
+
+.toggle-switch.active::before {
+    transform: translateX(20px);
+}
+
+/* ===== SELECT DROPDOWN ===== */
+.form-select {
+    border-radius: 10px;
+    padding: 6px 10px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    transition: 0.3s;
+}
+
+.form-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .settings-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* FIX MAIN GRID */
+    .content > div[style*="grid-template-columns"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px;
+    }
+
+    /* SECTION CARD FULL WIDTH */
+    .section-card {
+        width: 100%;
+    }
+
+    /* FIX HEADER BUTTON ALIGNMENT */
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    /* BUTTON FULL WIDTH */
+    .section-header .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* APPOINTMENT CARD FIX */
+    .appointment-card {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .appointment-date {
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    /* NOTIFICATION TIMELINE FIX */
+    .timeline {
+        padding-left: 20px;
+    }
+
+    .timeline-dot {
+        left: -18px;
+    }
+
+    /* TEXT FIX */
+    .appointment-info {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+
+
+@media (max-width: 768px) {
+
+    /* TITLE FIX */
+    .page-title {
+        font-size: 1.1rem;
+        gap: 6px;
+    }
+
+    /* BREADCRUMB FIX */
+    .breadcrumb {
+        font-size: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .header-actions {
+        gap: 10px;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+
+    .action-btn .badge {
+        width: 14px;
+        height: 14px;
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* TABLE → CARD CONVERSION */
+    .prescription-table,
+    .prescription-table thead,
+    .prescription-table tbody,
+    .prescription-table th,
+    .prescription-table td,
+    .prescription-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    /* HIDE TABLE HEADER */
+    .prescription-table thead {
+        display: none;
+    }
+
+    /* EACH ROW = CARD */
+    .prescription-table tr {
+        background: #fff;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* EACH CELL */
+    .prescription-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border: none;
+        font-size: 0.9rem;
+    }
+
+    /* LABELS (LEFT SIDE) */
+    .prescription-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6b7280;
+    }
+
+    /* MEDICATION NAME FIX */
+    .prescription-name {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #111827;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="heartbeat-loader"></div>
+        <div style="color: var(--stackly-secondary-color); font-weight: 600;">Loading Patient Portal...</div>
+    </div>
+
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="logo">
+    <img src="images/logo.webp" alt="Logo" class="logo-img">
+</a>
+        </div>
+
+
+        <div class="sidebar-menu">
+            <div class="menu-category">Health</div>
+            
+            <div class="menu-item active" data-page="overview" onclick="navigateTo('overview')">
+                <button class="menu-link">
+                    <i class="fas fa-home menu-icon"></i>
+                    <span class="menu-text">Overview</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="appointments" onclick="navigateTo('appointments')">
+                <button class="menu-link">
+                    <i class="fas fa-calendar-check menu-icon"></i>
+                    <span class="menu-text">Appointments</span>
+                    <span class="menu-badge">2</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="test-results" onclick="navigateTo('test-results')">
+                <button class="menu-link">
+                    <i class="fas fa-flask menu-icon"></i>
+                    <span class="menu-text">Test Results</span>
+                    <span class="menu-badge">3</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="medications" onclick="navigateTo('medications')">
+                <button class="menu-link">
+                    <i class="fas fa-pills menu-icon"></i>
+                    <span class="menu-text">Medications</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="prescriptions" onclick="navigateTo('prescriptions')">
+                <button class="menu-link">
+                    <i class="fas fa-file-prescription menu-icon"></i>
+                    <span class="menu-text">Prescriptions</span>
+                </button>
+            </div>
+
+            <div class="menu-item has-submenu" data-page="records">
+                <button class="menu-link" onclick="toggleSubmenu(this.parentElement)">
+                    <i class="fas fa-notes-medical menu-icon"></i>
+                    <span class="menu-text">Medical Records</span>
+                    <i class="fas fa-chevron-right menu-arrow"></i>
+                </button>
+                <div class="submenu">
+                    <button class="submenu-item" onclick="navigateTo('visits')">
+                        <i class="fas fa-stethoscope"></i> Visit History
+                    </button>
+                    <button class="submenu-item" onclick="navigateTo('vaccinations')">
+                        <i class="fas fa-syringe"></i> Vaccinations
+                    </button>
+                    <button class="submenu-item" onclick="navigateTo('documents')">
+                        <i class="fas fa-file-alt"></i> Documents
+                    </button>
+                </div>
+            </div>
+
+            <div class="menu-category">Account</div>
+
+            <div class="menu-item" data-page="billing" onclick="navigateTo('billing')">
+                <button class="menu-link">
+                    <i class="fas fa-credit-card menu-icon"></i>
+                    <span class="menu-text">Billing & Insurance</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="family" onclick="navigateTo('family')">
+                <button class="menu-link">
+                    <i class="fas fa-users menu-icon"></i>
+                    <span class="menu-text">Family Members</span>
+                </button>
+            </div>
+            <div class="menu-item" data-page="settings" onclick="navigateTo('settings')">
+                <button class="menu-link">
+                    <i class="fas fa-cog menu-icon"></i>
+                    <span class="menu-text">Settings</span>
+                </button>
+            </div>
+
+            <div class="menu-item">
+    <button class="menu-link" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt menu-icon" style="color:#ff4757;"></i>
+        <span class="menu-text">Logout</span>
+    </button>
+</div>
+
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-profile" onclick="navigateTo('profile')">
+                <div class="user-avatar">PT</div>
+                <div class="user-info">
+                    <div class="user-name" id="displayEmail">user@email.com</div>
+                    <div class="user-role">Patient ID: #PT-2024-001</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div>
+                    <h1 class="page-title" id="pageTitle">
+                        <i class="fas fa-home" style="color: var(--stackly-global-color);"></i>
+                        Health
+                    </h1>
+                </div>
+            </div>
+
+            <div class="header-right">
+              <div class="header-actions">
+
+    <a href="404-admin.html" class="action-btn">
+        <i class="fas fa-bell"></i>
+        <span class="badge">3</span>
+    </a>
+
+    <a href="404-admin.html" class="action-btn">
+        <i class="fas fa-envelope"></i>
+        <span class="badge">2</span>
+    </a>
+
+</div>
+            </div>
+        </header>
+
+        <!-- Content Sections -->
+        <div class="content">
+            <!-- OVERVIEW SECTION -->
+            <div class="content-section active" id="overview">
+                <div class="welcome-banner">
+                    <div class="welcome-content">
+                        <div class="welcome-title">Welcome back, John! 👋</div>
+                        <div class="welcome-subtitle">Here's your health summary for today</div>
+                        <div class="welcome-stats">
+                            <div class="welcome-stat">
+                                <div class="welcome-stat-value">12</div>
+                                <div class="welcome-stat-label">Upcoming Appointments</div>
+                            </div>
+                            <div class="welcome-stat">
+                                <div class="welcome-stat-value">5</div>
+                                <div class="welcome-stat-label">Active Medications</div>
+                            </div>
+                            <div class="welcome-stat">
+                                <div class="welcome-stat-value">3</div>
+                                <div class="welcome-stat-label">Pending Results</div>
+                            </div>
+                            <div class="welcome-stat">
+                                <div class="welcome-stat-value">98%</div>
+                                <div class="welcome-stat-label">Health Score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="health-grid">
+                    <div class="health-card">
+                        <div class="health-card-header">
+                            <div class="health-card-icon heart"><i class="fas fa-heartbeat"></i></div>
+                            <i class="fas fa-ellipsis-v" style="color: rgba(0,24,55,0.3); cursor: pointer;"></i>
+                        </div>
+                        <div class="health-card-value">72 <span style="font-size: 1rem; color: rgba(0,24,55,0.6);">bpm</span></div>
+                        <div class="health-card-label">Heart Rate</div>
+                        <div class="health-card-trend trend-stable">
+                            <i class="fas fa-minus"></i>
+                            <span>Stable</span>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="mini-bar" style="height: 40%;"></div>
+                            <div class="mini-bar" style="height: 60%;"></div>
+                            <div class="mini-bar" style="height: 45%;"></div>
+                            <div class="mini-bar" style="height: 70%;"></div>
+                            <div class="mini-bar" style="height: 55%;"></div>
+                            <div class="mini-bar" style="height: 65%;"></div>
+                            <div class="mini-bar" style="height: 50%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <div class="health-card-header">
+                            <div class="health-card-icon temp"><i class="fas fa-thermometer-half"></i></div>
+                            <i class="fas fa-ellipsis-v" style="color: rgba(0,24,55,0.3); cursor: pointer;"></i>
+                        </div>
+                        <div class="health-card-value">98.6 <span style="font-size: 1rem; color: rgba(0,24,55,0.6);">°F</span></div>
+                        <div class="health-card-label">Body Temperature</div>
+                        <div class="health-card-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+0.2° from yesterday</span>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="mini-bar" style="height: 50%; background: rgba(255, 193, 7, 0.3);"></div>
+                            <div class="mini-bar" style="height: 55%; background: rgba(255, 193, 7, 0.3);"></div>
+                            <div class="mini-bar" style="height: 60%; background: rgba(255, 193, 7, 0.3);"></div>
+                            <div class="mini-bar" style="height: 58%; background: rgba(255, 193, 7, 0.3);"></div>
+                            <div class="mini-bar" style="height: 62%; background: rgba(255, 193, 7, 0.3);"></div>
+                            <div class="mini-bar" style="height: 65%; background: rgba(255, 193, 7, 0.3);"></div>
+                            <div class="mini-bar" style="height: 60%; background: rgba(255, 193, 7, 0.3);"></div>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <div class="health-card-header">
+                            <div class="health-card-icon oxygen"><i class="fas fa-lungs"></i></div>
+                            <i class="fas fa-ellipsis-v" style="color: rgba(0,24,55,0.3); cursor: pointer;"></i>
+                        </div>
+                        <div class="health-card-value">98 <span style="font-size: 1rem; color: rgba(0,24,55,0.6);">%</span></div>
+                        <div class="health-card-label">Blood Oxygen (SpO2)</div>
+                        <div class="health-card-trend trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>Excellent</span>
+                        </div>
+                        <div class="mini-chart">
+                            <div class="mini-bar" style="height: 90%; background: rgba(46, 213, 115, 0.3);"></div>
+                            <div class="mini-bar" style="height: 92%; background: rgba(46, 213, 115, 0.3);"></div>
+                            <div class="mini-bar" style="height: 95%; background: rgba(46, 213, 115, 0.3);"></div>
+                            <div class="mini-bar" style="height: 93%; background: rgba(46, 213, 115, 0.3);"></div>
+                            <div class="mini-bar" style="height: 96%; background: rgba(46, 213, 115, 0.3);"></div>
+                            <div class="mini-bar" style="height: 94%; background: rgba(46, 213, 115, 0.3);"></div>
+                            <div class="mini-bar" style="height: 98%; background: rgba(46, 213, 115, 0.3);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title"><i class="fas fa-calendar-check" style="color: var(--stackly-global-color);"></i>Upcoming Appointments</h3>
+                            <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-plus"></i> Book New
+</button>
+                        </div>
+                        <div class="appointment-list">
+                            <div class="appointment-card" onclick="window.location.href='404-patient.html'">
+                                <div class="appointment-date">
+                                    <div class="appointment-day">15</div>
+                                    <div class="appointment-month">APR</div>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="appointment-title">Annual Physical Examination</div>
+                                    <div class="appointment-info">
+                                        <span><i class="fas fa-clock"></i> 10:00 AM</span>
+                                        <span><i class="fas fa-user-md"></i> Dr. Sarah Chen</span>
+                                        <span><i class="fas fa-map-marker-alt"></i> Room 302</span>
+                                    </div>
+                                    <span class="appointment-status status-confirmed">Confirmed</span>
+                                </div>
+                                <i class="fas fa-chevron-right" style="color: rgba(0,24,55,0.3);"></i>
+                            </div>
+
+                            <div class="appointment-card" onclick="window.location.href='404-patient.html'">
+                                <div class="appointment-date">
+                                    <div class="appointment-day">22</div>
+                                    <div class="appointment-month">APR</div>
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="appointment-title">Blood Work Follow-up</div>
+                                    <div class="appointment-info">
+                                        <span><i class="fas fa-clock"></i> 2:30 PM</span>
+                                        <span><i class="fas fa-user-md"></i> Dr. Michael Ross</span>
+                                        <span><i class="fas fa-map-marker-alt"></i> Lab 105</span>
+                                    </div>
+                                    <span class="appointment-status status-pending">Pending</span>
+                                </div>
+                                <i class="fas fa-chevron-right" style="color: rgba(0,24,55,0.3);"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3 class="section-title"><i class="fas fa-bell" style="color: var(--stackly-global-color);"></i>Notifications</h3>
+                            <button class="btn btn-secondary" onclick="clearNotifications()">
+                                <i class="fas fa-check"></i> Mark All Read
+                            </button>
+                        </div>
+                        <div class="timeline" id="notificationTimeline">
+                            <div class="timeline-item" style="animation-delay: 0s;">
+                                <div class="timeline-dot" style="background: #ff4757;"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-time">2 hours ago</div>
+                                    <div class="timeline-text">Your blood test results are ready for review</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item" style="animation-delay: 0.1s;">
+                                <div class="timeline-dot" style="background: #ffc107;"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-time">5 hours ago</div>
+                                    <div class="timeline-text">Reminder: Take your medication at 8 PM</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item" style="animation-delay: 0.2s;">
+                                <div class="timeline-dot" style="background: #2ed573;"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-time">Yesterday</div>
+                                    <div class="timeline-text">Appointment confirmed with Dr. Chen</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPOINTMENTS SECTION -->
+            <div class="content-section" id="appointments">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-calendar-alt" style="color: var(--stackly-global-color);"></i>My Appointments</h3>
+                        <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-plus"></i> Schedule Appointment
+</button>
+                    </div>
+
+                    <div class="appointment-list" id="appointmentList">
+                        <div class="appointment-card">
+                            <div class="appointment-date">
+                                <div class="appointment-day">15</div>
+                                <div class="appointment-month">APR</div>
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-title">Annual Physical Examination</div>
+                                <div class="appointment-info">
+                                    <span><i class="fas fa-clock"></i> 10:00 AM - 11:00 AM</span>
+                                    <span><i class="fas fa-user-md"></i> Dr. Sarah Chen</span>
+                                    <span><i class="fas fa-stethoscope"></i> Internal Medicine</span>
+                                </div>
+                                <div class="appointment-info">
+                                    <span><i class="fas fa-map-marker-alt"></i> BioTech Medical Center, Room 302</span>
+                                    <span><i class="fas fa-video"></i> In-person</span>
+                                </div>
+                                <span class="appointment-status status-confirmed" style="margin-top: 8px;">Confirmed</span>
+                            </div>
+                            <div class="action-cell">
+                                  <button class="btn btn-secondary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-calendar-alt"></i> Reschedule
+</button>
+
+<button class="btn btn-danger" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-times"></i> Cancel
+</button>
+                            </div>
+                        </div>
+
+                        <div class="appointment-card">
+                            <div class="appointment-date">
+                                <div class="appointment-day">22</div>
+                                <div class="appointment-month">APR</div>
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-title">Blood Work Follow-up</div>
+                                <div class="appointment-info">
+                                    <span><i class="fas fa-clock"></i> 2:30 PM - 3:00 PM</span>
+                                    <span><i class="fas fa-user-md"></i> Dr. Michael Ross</span>
+                                    <span><i class="fas fa-flask"></i> Hematology</span>
+                                </div>
+                                <div class="appointment-info">
+                                    <span><i class="fas fa-map-marker-alt"></i> BioTech Lab, Room 105</span>
+                                    <span><i class="fas fa-vial"></i> Lab Test</span>
+                                </div>
+                                <span class="appointment-status status-pending" style="margin-top: 8px;">Pending Confirmation</span>
+                            </div>
+                            <div class="action-cell">
+                                <button class="btn btn-secondary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-calendar-alt"></i> Reschedule
+</button>
+
+<button class="btn btn-danger" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-times"></i> Cancel
+</button>
+                            </div>
+                        </div>
+
+                        <div class="appointment-card" style="opacity: 0.6;">
+                            <div class="appointment-date">
+                                <div class="appointment-day">10</div>
+                                <div class="appointment-month">MAR</div>
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-title">Dental Checkup</div>
+                                <div class="appointment-info">
+                                    <span><i class="fas fa-clock"></i> 9:00 AM - 10:00 AM</span>
+                                    <span><i class="fas fa-user-md"></i> Dr. Emily Watson</span>
+                                    <span><i class="fas fa-tooth"></i> Dentistry</span>
+                                </div>
+                                <span class="appointment-status status-cancelled" style="margin-top: 8px;">Cancelled</span>
+                            </div>
+                            <div class="action-cell">
+                                <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-redo"></i> Book Again
+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-user-md" style="color: var(--stackly-global-color);"></i>My Care Team</h3>
+                    </div>
+                    <div class="family-grid">
+                        <div class="family-card" onclick="window.location.href='404-patient.html'">
+                            <div class="family-avatar" style="background: linear-gradient(135deg, #ff4757, #ff6b81);">SC</div>
+                            <div class="family-name">Dr. Sarah Chen</div>
+                            <div class="family-relation">Primary Care Physician</div>
+                            <button class="btn btn-primary" style="margin-top: 12px; width: 100%;"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-calendar-plus"></i> Book
+</button>
+                        </div>
+                        <div class="family-card" onclick="window.location.href='404-patient.html'">
+                            <div class="family-avatar" style="background: linear-gradient(135deg, #2ed573, #7bed9f);">MR</div>
+                            <div class="family-name">Dr. Michael Ross</div>
+                            <div class="family-relation">Hematologist</div>
+                            <button class="btn btn-primary" style="margin-top: 12px; width: 100%;"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-calendar-plus"></i> Book
+</button>
+                        </div>
+                        <div class="family-card" onclick="window.location.href='404-patient.html'">
+                            <div class="family-avatar" style="background: linear-gradient(135deg, #ffc107, #ffeaa7);">EW</div>
+                            <div class="family-name">Dr. Emily Watson</div>
+                            <div class="family-relation">Dentist</div>
+                            <button class="btn btn-primary" style="margin-top: 12px; width: 100%;"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-calendar-plus"></i> Book
+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEST RESULTS SECTION -->
+            <div class="content-section" id="test-results">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-flask" style="color: var(--stackly-global-color);"></i>Recent Test Results</h3>
+                        <div class="section-actions">
+                            <button class="btn btn-secondary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-download"></i> Download All
+</button>
+
+<button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-plus"></i> New Lab Order
+</button>
+                        </div>
+                    </div>
+
+                    <div class="test-result">
+                        <div class="test-icon"><i class="fas fa-tint"></i></div>
+                        <div class="test-details">
+                            <div class="test-name">Complete Blood Count (CBC)</div>
+                            <div class="test-date">March 28, 2026 • Dr. Michael Ross</div>
+                        </div>
+                        <div class="test-status">
+                            <div class="test-value" style="color: #2ed573;">Normal</div>
+                            <div class="test-range">All values in range</div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-eye"></i> View
+</button>
+                    </div>
+
+                    <div class="test-result">
+                        <div class="test-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fas fa-vial"></i></div>
+                        <div class="test-details">
+                            <div class="test-name">Lipid Panel</div>
+                            <div class="test-date">March 15, 2026 • Dr. Sarah Chen</div>
+                        </div>
+                        <div class="test-status">
+                            <div class="test-value" style="color: #ffc107;">Borderline</div>
+                            <div class="test-range">LDL slightly elevated</div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-eye"></i> View
+</button>
+                    </div>
+
+                    <div class="test-result">
+                        <div class="test-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;"><i class="fas fa-heartbeat"></i></div>
+                        <div class="test-details">
+                            <div class="test-name">Electrocardiogram (ECG)</div>
+                            <div class="test-date">February 20, 2026 • Dr. Sarah Chen</div>
+                        </div>
+                        <div class="test-status">
+                            <div class="test-value" style="color: #2ed573;">Normal</div>
+                            <div class="test-range">No abnormalities detected</div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-eye"></i> View
+</button>
+                    </div>
+
+                    <div class="test-result">
+                        <div class="test-icon" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;"><i class="fas fa-notes-medical"></i></div>
+                        <div class="test-details">
+                            <div class="test-name">HbA1c (Diabetes Screening)</div>
+                            <div class="test-date">February 10, 2026 • Dr. Sarah Chen</div>
+                        </div>
+                        <div class="test-status">
+                            <div class="test-value" style="color: #2ed573;">5.7%</div>
+                            <div class="test-range">Normal (Non-diabetic)</div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-eye"></i> View
+</button>
+                    </div>
+                </div>
+
+          <div class="section-card">
+    <div class="section-header">
+        <h3 class="section-title">
+            <i class="fas fa-chart-line" style="color: var(--stackly-global-color);"></i>
+            Health Trends
+        </h3>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-placeholder">
+    <div class="chart-bars">
+        <div class="big-bar" style="height: 60%"></div>
+        <div class="big-bar" style="height: 65%"></div>
+        <div class="big-bar" style="height: 70%"></div>
+        <div class="big-bar" style="height: 68%"></div>
+        <div class="big-bar" style="height: 75%"></div>
+        <div class="big-bar" style="height: 80%"></div>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+            </div>
+
+            <!-- MEDICATIONS SECTION -->
+            <div class="content-section" id="medications">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-pills" style="color: var(--stackly-global-color);"></i>Current Medications</h3>
+                          <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-plus"></i> Add Medication
+</button>
+                    </div>
+
+                    <div class="medication-grid">
+                        <div class="medication-card">
+                            <div class="medication-header">
+                                <div>
+                                    <div class="medication-name">Metformin</div>
+                                    <div class="medication-dosage">500mg • Twice daily</div>
+                                </div>
+                                <i class="fas fa-ellipsis-v" style="color: rgba(0,24,55,0.3); cursor: pointer;"></i>
+                            </div>
+                            <div class="medication-schedule">
+                                <span class="schedule-pill taken"><i class="fas fa-check"></i> 8:00 AM</span>
+                                <span class="schedule-pill">8:00 PM</span>
+                            </div>
+                            <div class="medication-progress">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span>15/30 days</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 50%;"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="flex: 1;"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-check"></i> Take Now
+</button>
+
+<button class="btn btn-secondary"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-sync"></i> Refill
+</button>
+                            </div>
+                        </div>
+
+                        <div class="medication-card">
+                            <div class="medication-header">
+                                <div>
+                                    <div class="medication-name">Lisinopril</div>
+                                    <div class="medication-dosage">10mg • Once daily</div>
+                                </div>
+                                <i class="fas fa-ellipsis-v" style="color: rgba(0,24,55,0.3); cursor: pointer;"></i>
+                            </div>
+                            <div class="medication-schedule">
+                                <span class="schedule-pill taken"><i class="fas fa-check"></i> 9:00 AM</span>
+                            </div>
+                            <div class="medication-progress">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span>22/30 days</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 73%;"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="flex: 1;"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-check"></i> Take Now
+</button>
+
+<button class="btn btn-secondary"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-sync"></i> Refill
+</button>
+                            </div>
+                        </div>
+
+                        <div class="medication-card">
+                            <div class="medication-header">
+                                <div>
+                                    <div class="medication-name">Atorvastatin</div>
+                                    <div class="medication-dosage">20mg • Once daily at bedtime</div>
+                                </div>
+                                <i class="fas fa-ellipsis-v" style="color: rgba(0,24,55,0.3); cursor: pointer;"></i>
+                            </div>
+                            <div class="medication-schedule">
+                                <span class="schedule-pill">10:00 PM</span>
+                            </div>
+                            <div class="medication-progress">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span>5/30 days</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 17%;"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                               <button class="btn btn-success" style="flex: 1;"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-check"></i> Take Now
+</button>
+
+<button class="btn btn-secondary"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-sync"></i> Refill
+</button>
+                            </div>
+                        </div>
+
+                        <div class="medication-card">
+                            <div class="medication-header">
+                                <div>
+                                    <div class="medication-name">Vitamin D3</div>
+                                    <div class="medication-dosage">2000 IU • Once daily</div>
+                                </div>
+                                <i class="fas fa-ellipsis-v" style="color: rgba(0,24,55,0.3); cursor: pointer;"></i>
+                            </div>
+                            <div class="medication-schedule">
+                                <span class="schedule-pill taken"><i class="fas fa-check"></i> With breakfast</span>
+                            </div>
+                            <div class="medication-progress">
+                                <div class="progress-label">
+                                    <span>Progress</span>
+                                    <span>45/90 days</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 50%;"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="flex: 1;"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-check"></i> Take Now
+</button>
+
+<button class="btn btn-secondary"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-sync"></i> Refill
+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-history" style="color: var(--stackly-global-color);"></i>Medication History</h3>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-item" style="animation-delay: 0s;">
+                            <div class="timeline-dot" style="background: #2ed573;"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Today, 8:00 AM</div>
+                                <div class="timeline-text">Took Metformin 500mg</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.1s;">
+                            <div class="timeline-dot" style="background: #2ed573;"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Today, 9:00 AM</div>
+                                <div class="timeline-text">Took Lisinopril 10mg</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.2s;">
+                            <div class="timeline-dot" style="background: #2ed573;"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Yesterday, 8:00 PM</div>
+                                <div class="timeline-text">Took Metformin 500mg</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.3s;">
+                            <div class="timeline-dot" style="background: #ffc107;"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Yesterday, 10:30 PM</div>
+                                <div class="timeline-text">Missed Atorvastatin dose</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRESCRIPTIONS SECTION -->
+            <div class="content-section" id="prescriptions">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-file-prescription" style="color: var(--stackly-global-color);"></i>Active Prescriptions</h3>
+                        <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-sync"></i> Request Refill
+</button>
+                    </div>
+
+                    <table class="prescription-table">
+                        <thead>
+                            <tr>
+                                <th>Medication</th>
+                                <th>Dosage</th>
+                                <th>Frequency</th>
+                                <th>Prescribed By</th>
+                                <th>Refills Left</th>
+                                <th>Expires</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="prescription-name">Metformin</div>
+                                    <div class="prescription-instruction">Take with food</div>
+                                </td>
+                                <td>500mg</td>
+                                <td>Twice daily</td>
+                                <td>Dr. Sarah Chen</td>
+                                <td>2</td>
+                                <td>Jun 15, 2026</td>
+                                <td>
+                                    <button class="btn btn-primary"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-sync"></i> Refill
+</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="prescription-name">Lisinopril</div>
+                                    <div class="prescription-instruction">Take in the morning</div>
+                                </td>
+                                <td>10mg</td>
+                                <td>Once daily</td>
+                                <td>Dr. Sarah Chen</td>
+                                <td>5</td>
+                                <td>Aug 20, 2026</td>
+                                <td>
+                                    <button class="btn btn-primary"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-sync"></i> Refill
+</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="prescription-name">Atorvastatin</div>
+                                    <div class="prescription-instruction">Take at bedtime</div>
+                                </td>
+                                <td>20mg</td>
+                                <td>Once daily</td>
+                                <td>Dr. Michael Ross</td>
+                                <td>3</td>
+                                <td>Jul 10, 2026</td>
+                                <td>
+                                    <button class="btn btn-primary"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-sync"></i> Refill
+</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-history" style="color: var(--stackly-global-color);"></i>Prescription History</h3>
+                    </div>
+                    <div class="appointment-list">
+                        <div class="appointment-card" style="opacity: 0.7;">
+                            <div class="appointment-details">
+                                <div class="appointment-title">Amoxicillin</div>
+                                <div class="appointment-info">
+                                    <span><i class="fas fa-pills"></i> 500mg • Three times daily</span>
+                                    <span><i class="fas fa-user-md"></i> Dr. Emily Watson</span>
+                                </div>
+                                <span class="appointment-status status-cancelled">Completed - Feb 2026</span>
+                            </div>
+                            <button class="btn btn-secondary"
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-eye"></i> View
+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISITS SECTION -->
+            <div class="content-section" id="visits">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-stethoscope" style="color: var(--stackly-global-color);"></i>Visit History</h3>
+                       <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-download"></i> Download Records
+</button>
+                    </div>
+
+                    <div class="timeline">
+                        <div class="timeline-item" style="animation-delay: 0s;">
+                            <div class="timeline-dot" style="background: var(--stackly-global-color);"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">March 28, 2026</div>
+                                <div class="timeline-text">
+                                    <strong>Annual Physical Examination</strong><br>
+                                    Dr. Sarah Chen • BioTech Medical Center<br>
+                                    <span style="color: rgba(0,24,55,0.6);">General checkup, blood work ordered. Patient in good health.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.1s;">
+                            <div class="timeline-dot" style="background: var(--stackly-global-color);"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">February 20, 2026</div>
+                                <div class="timeline-text">
+                                    <strong>Cardiology Consultation</strong><br>
+                                    Dr. James Wilson • Heart Care Center<br>
+                                    <span style="color: rgba(0,24,55,0.6);">ECG normal, no concerns. Follow-up in 6 months.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.2s;">
+                            <div class="timeline-dot" style="background: var(--stackly-global-color);"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">January 15, 2026</div>
+                                <div class="timeline-text">
+                                    <strong>Dental Checkup</strong><br>
+                                    Dr. Emily Watson • BioTech Dental<br>
+                                    <span style="color: rgba(0,24,55,0.6);">Cleaning completed, no cavities. Next visit in 6 months.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.3s;">
+                            <div class="timeline-dot" style="background: var(--stackly-global-color);"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">December 10, 2025</div>
+                                <div class="timeline-text">
+                                    <strong>Eye Examination</strong><br>
+                                    Dr. Lisa Park • Vision Care Center<br>
+                                    <span style="color: rgba(0,24,55,0.6);">Prescription updated. 20/20 vision with correction.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VACCINATIONS SECTION -->
+            <div class="content-section" id="vaccinations">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-syringe" style="color: var(--stackly-global-color);"></i>Vaccination Records</h3>
+                        <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-plus"></i> Add Record
+</button>
+                    </div>
+
+                    <div class="vaccine-card">
+                        <div class="vaccine-icon"><i class="fas fa-shield-virus"></i></div>
+                        <div class="vaccine-info">
+                            <div class="vaccine-name">COVID-19 Vaccine (Pfizer)</div>
+                            <div class="vaccine-date">Dose 3: October 15, 2025</div>
+                        </div>
+                        <span class="vaccine-status">Up to Date</span>
+                    </div>
+
+                    <div class="vaccine-card">
+                        <div class="vaccine-icon"><i class="fas fa-shield-virus"></i></div>
+                        <div class="vaccine-info">
+                            <div class="vaccine-name">Influenza (Flu)</div>
+                            <div class="vaccine-date">September 20, 2025</div>
+                        </div>
+                        <span class="vaccine-status">Up to Date</span>
+                    </div>
+
+                    <div class="vaccine-card">
+                        <div class="vaccine-icon"><i class="fas fa-shield-virus"></i></div>
+                        <div class="vaccine-info">
+                            <div class="vaccine-name">Tetanus (Td)</div>
+                            <div class="vaccine-date">March 10, 2020</div>
+                        </div>
+                        <span class="vaccine-status" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">Due for Booster</span>
+                    </div>
+
+                    <div class="vaccine-card">
+                        <div class="vaccine-icon"><i class="fas fa-shield-virus"></i></div>
+                        <div class="vaccine-info">
+                            <div class="vaccine-name">Hepatitis B</div>
+                            <div class="vaccine-date">Series completed: June 2015</div>
+                        </div>
+                        <span class="vaccine-status">Up to Date</span>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-calendar-alt" style="color: var(--stackly-global-color);"></i>Upcoming Vaccinations</h3>
+                    </div>
+                    <div class="appointment-card" style="background: rgba(255, 193, 7, 0.1);">
+                        <div class="appointment-details">
+                            <div class="appointment-title">Tetanus Booster</div>
+                            <div class="appointment-info">
+                                <span><i class="fas fa-calendar"></i> Recommended by: June 2026</span>
+                                <span><i class="fas fa-hospital"></i> Any clinic</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-calendar-plus"></i> Schedule
+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DOCUMENTS SECTION -->
+            <div class="content-section" id="documents">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-folder-open" style="color: var(--stackly-global-color);"></i>Medical Documents</h3>
+                        <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-upload"></i> Upload Document
+</button>
+                    </div>
+
+                    <div class="document-grid">
+                        <div class="document-card" onclick="window.location.href='404-patient.html'">
+                            <div class="document-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div class="document-name">Blood Test Results</div>
+                            <div class="document-date">March 28, 2026</div>
+                        </div>
+                        <div class="document-card" onclick="window.location.href='404-patient.html'">
+                            <div class="document-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div class="document-name">Annual Physical Report</div>
+                            <div class="document-date">March 28, 2026</div>
+                        </div>
+                        <div class="document-card" onclick="window.location.href='404-patient.html'">
+                            <div class="document-icon"><i class="fas fa-file-image"></i></div>
+                            <div class="document-name">X-Ray Results</div>
+                            <div class="document-date">February 15, 2026</div>
+                        </div>
+                        <div class="document-card" onclick="window.location.href='404-patient.html'">
+                            <div class="document-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div class="document-name">Insurance Card</div>
+                            <div class="document-date">January 1, 2026</div>
+                        </div>
+                        <div class="document-card" onclick="window.location.href='404-patient.html'">
+                            <div class="document-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div class="document-name">Vaccination Records</div>
+                            <div class="document-date">Updated: Oct 2025</div>
+                        </div>
+                        <div class="document-card" onclick="window.location.href='404-patient.html'">
+                            <div class="document-icon"><i class="fas fa-file-medical"></i></div>
+                            <div class="document-name">Allergy Report</div>
+                            <div class="document-date">December 2025</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BILLING SECTION -->
+            <div class="content-section" id="billing">
+                <div class="insurance-card" style="margin-bottom: 30px;">
+                    <div class="insurance-provider">Blue Cross Blue Shield</div>
+                    <div class="insurance-number">•••• •••• •••• 4582</div>
+                    <div class="insurance-details">
+                        <div class="insurance-detail">
+                            <div class="insurance-label">Plan Type</div>
+                            <div class="insurance-value">PPO Gold</div>
+                        </div>
+                        <div class="insurance-detail">
+                            <div class="insurance-label">Group Number</div>
+                            <div class="insurance-value">BC784512</div>
+                        </div>
+                        <div class="insurance-detail">
+                            <div class="insurance-label">Effective Date</div>
+                            <div class="insurance-value">Jan 1, 2026</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-file-invoice-dollar" style="color: var(--stackly-global-color);"></i>Recent Bills</h3>
+                      <button class="btn btn-secondary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-download"></i> Download Statement
+</button>
+                    </div>
+
+                    <div class="bill-card">
+                        <div class="bill-info">
+                            <h4>Annual Physical Examination</h4>
+                            <p>Date: March 28, 2026 • Dr. Sarah Chen</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="bill-amount">$125.00</div>
+                            <span class="bill-status status-confirmed">Paid</span>
+                        </div>
+                    </div>
+
+                    <div class="bill-card">
+                        <div class="bill-info">
+                            <h4>Blood Work - Comprehensive Panel</h4>
+                            <p>Date: March 28, 2026 • BioTech Lab</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="bill-amount">$85.00</div>
+                            <span class="bill-status status-pending">Pending Insurance</span>
+                        </div>
+                    </div>
+
+                    <div class="bill-card">
+                        <div class="bill-info">
+                            <h4>Cardiology Consultation</h4>
+                            <p>Date: February 20, 2026 • Dr. James Wilson</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="bill-amount">$250.00</div>
+                            <span class="bill-status status-confirmed">Paid</span>
+                        </div>
+                    </div>
+
+                    <div class="bill-card" style="background: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107;">
+                        <div class="bill-info">
+                            <h4>Outstanding Balance</h4>
+                            <p>Due Date: April 30, 2026</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="bill-amount" style="color: #ffc107;">$85.00</div>
+                            <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-credit-card"></i> Pay Now
+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-chart-pie" style="color: var(--stackly-global-color);"></i>Payment Summary (YTD)</h3>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">$1,245</div>
+                            <div class="stat-label">Total Billed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">$980</div>
+                            <div class="stat-label">Insurance Covered</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">$265</div>
+                            <div class="stat-label">Out of Pocket</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">$85</div>
+                            <div class="stat-label">Current Balance</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAMILY SECTION -->
+            <div class="content-section" id="family">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-users" style="color: var(--stackly-global-color);"></i>Family Members</h3>
+                       <button class="btn btn-primary" onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-user-plus"></i> Add Member
+</button>
+                    </div>
+
+                    <div class="family-grid">
+                        <div class="family-card" onclick="window.location.href='404-patient.html'">
+                            <div class="family-avatar" style="background: linear-gradient(135deg, #ff4757, #ff6b81);">JD</div>
+                            <div class="family-name">John Doe</div>
+                            <div class="family-relation">Self (Primary)</div>
+                            <div style="margin-top: 12px; font-size: 0.85rem; color: rgba(0,24,55,0.6);">
+                                <i class="fas fa-birthday-cake"></i> 35 years old
+                            </div>
+                        </div>
+
+                        <div class="family-card" onclick="window.location.href='404-patient.html'">
+                            <div class="family-avatar" style="background: linear-gradient(135deg, #ffc107, #ffeaa7);">JD</div>
+                            <div class="family-name">Jane Doe</div>
+                            <div class="family-relation">Spouse</div>
+                            <div style="margin-top: 12px; font-size: 0.85rem; color: rgba(0,24,55,0.6);">
+                                <i class="fas fa-birthday-cake"></i> 33 years old
+                            </div>
+                        </div>
+
+                        <div class="family-card" onclick="window.location.href='404-patient.html'">
+                            <div class="family-avatar" style="background: linear-gradient(135deg, #2ed573, #7bed9f);">TD</div>
+                            <div class="family-name">Tommy Doe</div>
+                            <div class="family-relation">Son</div>
+                            <div style="margin-top: 12px; font-size: 0.85rem; color: rgba(0,24,55,0.6);">
+                                <i class="fas fa-birthday-cake"></i> 8 years old
+                            </div>
+                        </div>
+
+                        <div class="family-card" onclick="window.location.href='404-patient.html'">
+                            <div class="family-avatar" style="background: linear-gradient(135deg, #9b59b6, #bb8fce);">ED</div>
+                            <div class="family-name">Emma Doe</div>
+                            <div class="family-relation">Daughter</div>
+                            <div style="margin-top: 12px; font-size: 0.85rem; color: rgba(0,24,55,0.6);">
+                                <i class="fas fa-birthday-cake"></i> 5 years old
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          
+            <!-- SETTINGS SECTION -->
+            <div class="content-section" id="settings">
+                <div class="section-card">
+                    <div class="settings-section">
+                        <div class="settings-title">Notifications</div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Appointment Reminders</div>
+                                <div class="settings-description">Receive notifications 24 hours before appointments</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Medication Reminders</div>
+                                <div class="settings-description">Daily reminders to take medications</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Test Results Available</div>
+                                <div class="settings-description">Get notified when new results are ready</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Billing Alerts</div>
+                                <div class="settings-description">Notifications about new bills and payments</div>
+                            </div>
+                            <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <div class="settings-title">Privacy & Security</div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Two-Factor Authentication</div>
+                                <div class="settings-description">Add an extra layer of security to your account</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Share Records with Family</div>
+                                <div class="settings-description">Allow family members to view your health records</div>
+                            </div>
+                            <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Research Participation</div>
+                                <div class="settings-description">Share anonymized data for medical research</div>
+                            </div>
+                            <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <div class="settings-title">Preferences</div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Language</div>
+                                <div class="settings-description">Select your preferred language</div>
+                            </div>
+                            <select class="form-select" style="width: 150px;">
+                                <option>English</option>
+                                <option>Spanish</option>
+                                <option>French</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Time Zone</div>
+                                <div class="settings-description">Set your local time zone</div>
+                            </div>
+                            <select class="form-select" style="width: 200px;">
+                                <option>Eastern Time (ET)</option>
+                                <option>Central Time (CT)</option>
+                                <option>Mountain Time (MT)</option>
+                                <option>Pacific Time (PT)</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Units</div>
+                                <div class="settings-description">Measurement system for health data</div>
+                            </div>
+                            <select class="form-select" style="width: 150px;">
+                                <option>Imperial (lb, °F)</option>
+                                <option>Metric (kg, °C)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE SECTION -->
+            <div class="content-section" id="profile">
+                <div class="section-card" style="max-width: 800px; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 32px;">
+                        <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white; font-size: 3rem; font-weight: 700;">JD</div>
+                        <h2 style="color: var(--stackly-secondary-color); margin-bottom: 4px;">John Doe</h2>
+                        <p style="color: rgba(0,24,55,0.6);">Patient ID: #PT-2024-001</p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); showToast('Profile updated successfully!', 'success');">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-group">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-input" value="John">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-input" value="Doe">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" value="john.doe@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-input" value="+1 (555) 123-4567">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-group">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" class="form-input" value="1991-05-15">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Blood Type</label>
+                                <select class="form-input">
+                                    <option>O+</option>
+                                    <option>O-</option>
+                                    <option>A+</option>
+                                    <option>A-</option>
+                                    <option>B+</option>
+                                    <option>B-</option>
+                                    <option>AB+</option>
+                                    <option>AB-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Emergency Contact</label>
+                            <input type="text" class="form-input" value="Jane Doe (Spouse) - +1 (555) 987-6543">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Allergies</label>
+                            <textarea class="form-textarea">Penicillin, Shellfish</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Current Medications</label>
+                            <textarea class="form-textarea">Metformin 500mg, Lisinopril 10mg, Atorvastatin 20mg</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;" 
+        onclick="window.location.href='404-patient.html'">
+    <i class="fas fa-save"></i> Save Changes
+</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                createParticles();
+            }, 1500);
+        });
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Navigation
+        function navigateTo(page) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(page);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === page) {
+                    item.classList.add('active');
+                }
+            });
+            
+            updateHeader(page);
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            
+            const pageNames = {
+                overview: 'Health Overview',
+                appointments: 'My Appointments',
+                'test-results': 'Test Results',
+                medications: 'My Medications',
+                prescriptions: 'Prescriptions',
+                visits: 'Visit History',
+                vaccinations: 'Vaccination Records',
+                documents: 'Medical Documents',
+                billing: 'Billing & Insurance',
+                family: 'Family Members',
+                messages: 'Secure Messages',
+                settings: 'Settings',
+                profile: 'My Profile'
+            };
+            showToast(`Navigated to ${pageNames[page] || page}`, 'success');
+        }
+
+        function updateHeader(page) {
+            const titles = {
+                overview: { title: 'Health', icon: 'home', breadcrumb: 'Overview' },
+                appointments: { title: 'Appointments', icon: 'calendar-check', breadcrumb: 'Appointments' },
+                'test-results': { title: 'Test Results', icon: 'flask', breadcrumb: 'Test Results' },
+                medications: { title: 'My Medications', icon: 'pills', breadcrumb: 'Medications' },
+                prescriptions: { title: 'Prescriptions', icon: 'file-prescription', breadcrumb: 'Prescriptions' },
+                visits: { title: 'Visit History', icon: 'stethoscope', breadcrumb: 'Medical Records / Visit History' },
+                vaccinations: { title: 'Vaccination', icon: 'syringe', breadcrumb: 'Medical Records / Vaccinations' },
+                documents: { title: 'Documents', icon: 'folder-open', breadcrumb: 'Medical Records / Documents' },
+                billing: { title: 'Billing', icon: 'credit-card', breadcrumb: 'Billing & Insurance' },
+                family: { title: 'Family Members', icon: 'users', breadcrumb: 'Family Members' },
+                messages: { title: 'Secure Messages', icon: 'comments', breadcrumb: 'Messages' },
+                settings: { title: 'Settings', icon: 'cog', breadcrumb: 'Settings' },
+                profile: { title: 'My Profile', icon: 'user', breadcrumb: 'Profile' }
+            };
+            
+            const info = titles[page] || titles.overview;
+            document.getElementById('pageTitle').innerHTML = `<i class="fas fa-${info.icon}" style="color: var(--stackly-global-color);"></i>${info.title}`;
+            document.getElementById('breadcrumb').innerHTML = `
+                <a onclick="navigateTo('overview')">Home</a>
+                <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
+                <span>${info.breadcrumb}</span>
+            `;
+        }
+
+        // Sidebar Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('toggleIcon');
+            sidebar.classList.toggle('collapsed');
+            icon.classList.toggle('fa-chevron-left');
+            icon.classList.toggle('fa-chevron-right');
+        }
+
+        function toggleMobileSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+        }
+
+        function toggleSubmenu(item) {
+            item.classList.toggle('open');
+        }
+
+        // Modal Functions
+        function openModal(type) {
+            const modal = document.getElementById('generalModal');
+            const title = document.getElementById('generalModalTitle');
+            const content = document.getElementById('generalModalContent');
+            
+            const configs = {
+                appointment: {
+                    title: 'Schedule New Appointment',
+                    content: `
+                        <form onsubmit="event.preventDefault(); closeGeneralModal(); showToast('Appointment requested!', 'success');">
+                            <div class="form-group">
+                                <label class="form-label">Select Doctor</label>
+                                <select class="form-input">
+                                    <option>Dr. Sarah Chen - Primary Care</option>
+                                    <option>Dr. Michael Ross - Hematology</option>
+                                    <option>Dr. Emily Watson - Dentistry</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Preferred Date</label>
+                                <input type="date" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Preferred Time</label>
+                                <select class="form-input">
+                                    <option>Morning (9 AM - 12 PM)</option>
+                                    <option>Afternoon (12 PM - 5 PM)</option>
+                                    <option>Evening (5 PM - 8 PM)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Reason for Visit</label>
+                                <textarea class="form-textarea" placeholder="Briefly describe your symptoms or reason..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-calendar-plus"></i> Request Appointment
+                            </button>
+                        </form>
+                    `
+                },
+                medication: {
+                    title: 'Add New Medication',
+                    content: `
+                        <form onsubmit="event.preventDefault(); closeGeneralModal(); showToast('Medication added!', 'success');">
+                            <div class="form-group">
+                                <label class="form-label">Medication Name</label>
+                                <input type="text" class="form-input" placeholder="Enter medication name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Dosage</label>
+                                <input type="text" class="form-input" placeholder="e.g., 500mg">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Frequency</label>
+                                <select class="form-input">
+                                    <option>Once daily</option>
+                                    <option>Twice daily</option>
+                                    <option>Three times daily</option>
+                                    <option>As needed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Prescribing Doctor</label>
+                                <input type="text" class="form-input" placeholder="Doctor name">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-plus"></i> Add Medication
+                            </button>
+                        </form>
+                    `
+                },
+                'lab-order': {
+                    title: 'Request Lab Order',
+                    content: `
+                        <form onsubmit="event.preventDefault(); closeGeneralModal(); showToast('Lab order requested!', 'success');">
+                            <div class="form-group">
+                                <label class="form-label">Test Type</label>
+                                <select class="form-input">
+                                    <option>Blood Work (CBC)</option>
+                                    <option>Lipid Panel</option>
+                                    <option>Diabetes Screening (HbA1c)</option>
+                                    <option>Thyroid Function</option>
+                                    <option>Vitamin D</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Preferred Lab Location</label>
+                                <select class="form-input">
+                                    <option>BioTech Main Lab</option>
+                                    <option>Westside Branch</option>
+                                    <option>Mobile Collection</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Notes for Doctor</label>
+                                <textarea class="form-textarea" placeholder="Any specific concerns..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-vial"></i> Request Lab Order
+                            </button>
+                        </form>
+                    `
+                }
+            };
+            
+            const config = configs[type] || configs.appointment;
+            title.textContent = config.title;
+            content.innerHTML = config.content;
+            modal.classList.add('active');
+        }
+
+        function closeGeneralModal() {
+            document.getElementById('generalModal').classList.remove('active');
+        }
+
+        function closeModalOnOverlay(event) {
+            if (event.target === event.currentTarget) {
+                closeGeneralModal();
+                closeEmergencyModal();
+            }
+        }
+
+        // Emergency Modal
+        function openEmergencyModal() {
+            document.getElementById('emergencyModal').classList.add('active');
+        }
+
+        function closeEmergencyModal() {
+            document.getElementById('emergencyModal').classList.remove('active');
+        }
+
+        function callNumber(number) {
+            showToast(`Calling ${number}...`, 'warning');
+            setTimeout(() => {
+                window.location.href = `tel:${number}`;
+            }, 1000);
+        }
+
+        // Chat Functions
+        function toggleChat() {
+            document.getElementById('chatWindow').classList.toggle('active');
+        }
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.style.cssText = 'align-self: flex-end; max-width: 70%; background: var(--stackly-global-color); color: white; padding: 12px 16px; border-radius: 16px; border-bottom-right-radius: 4px; margin-bottom: 12px;';
+            userMsg.innerHTML = `<div>${message}</div><div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">Just now</div>`;
+            messagesContainer.appendChild(userMsg);
+            
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Simulate response
+            setTimeout(() => {
+                const agentMsg = document.createElement('div');
+                agentMsg.style.cssText = 'align-self: flex-start; max-width: 70%; background: white; padding: 12px 16px; border-radius: 16px; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px;';
+                agentMsg.innerHTML = `<div style="font-weight: 600; color: var(--stackly-global-color); margin-bottom: 4px;">Support Agent</div><div>Thank you for your message. A representative will assist you shortly.</div><div style="font-size: 0.75rem; color: rgba(0,24,55,0.5); margin-top: 4px;">Just now</div>`;
+                messagesContainer.appendChild(agentMsg);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1000);
+        }
+
+        // Action Functions
+        function showAppointmentDetails(id) {
+            showToast(`Loading appointment details #${id}...`, 'info');
+        }
+
+        function rescheduleAppointment(id) {
+            showToast('Opening reschedule calendar...', 'info');
+            openModal('appointment');
+        }
+
+        function cancelAppointment(id) {
+            if (confirm('Are you sure you want to cancel this appointment?')) {
+                showToast('Appointment cancelled successfully', 'success');
+            }
+        }
+
+        function bookAgain(id) {
+            showToast('Booking new appointment...', 'info');
+            openModal('appointment');
+        }
+
+        function filterAppointments(filter) {
+            showToast(`Filtering appointments: ${filter}`, 'info');
+        }
+
+        function searchAppointments(query) {
+            if (query.length > 2) {
+                showToast(`Searching for: ${query}`, 'info');
+            }
+        }
+
+        function showDoctorProfile(id) {
+            showToast(`Loading Dr. profile #${id}...`, 'info');
+        }
+
+        function viewTestDetails(id) {
+            showToast(`Opening test result #${id}...`, 'info');
+        }
+
+        function markTaken(id) {
+            showToast('Medication marked as taken! Great job!', 'success');
+        }
+
+        function refillMedication(id) {
+            showToast('Refill request submitted to pharmacy', 'success');
+        }
+
+        function requestRefill(id) {
+            showToast('Prescription refill requested', 'success');
+        }
+
+        function viewPrescriptionDetails(id) {
+            showToast(`Loading prescription details #${id}...`, 'info');
+        }
+
+        function scheduleVaccination() {
+            openModal('appointment');
+        }
+
+        function viewDocument(id) {
+            showToast(`Opening document #${id}...`, 'info');
+        }
+
+        function payBill() {
+            showToast('Redirecting to secure payment...', 'info');
+        }
+
+        function viewFamilyMember(id) {
+            showToast(`Loading family member profile #${id}...`, 'info');
+        }
+
+        function showNotifications() {
+            showToast('You have 3 new notifications', 'info');
+        }
+
+        function clearNotifications() {
+            document.getElementById('notificationTimeline').innerHTML = '<div style="text-align: center; color: rgba(0,24,55,0.5); padding: 20px;">No new notifications</div>';
+            showToast('All notifications marked as read', 'success');
+        }
+
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                showToast(`Searching for: ${event.target.value}`, 'info');
+            }
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'times-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            const colors = {
+                success: '#2ed573',
+                error: '#ff4757',
+                warning: '#ffc107',
+                info: '#3772ff'
+            };
+            
+            toast.innerHTML = `
+                <i class="fas fa-${icons[type]}" style="color: ${colors[type]}; font-size: 1.2rem;"></i>
+                <span style="font-weight: 500; color: var(--stackly-secondary-color);">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+
+    <script>
+document.addEventListener("click", function (e) {
+    const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.querySelector(".mobile-toggle");
+
+    // Only for mobile view
+    if (window.innerWidth <= 768) {
+
+        // If sidebar is open
+        if (sidebar.classList.contains("mobile-open")) {
+
+            // Click outside sidebar & not on toggle button
+            if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove("mobile-open");
+            }
+        }
+    }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const email = localStorage.getItem("userEmail");
+    const loginTime = localStorage.getItem("loginTime");
+
+    if (email) {
+        document.getElementById("displayEmail").innerText = email;
+    }
+
+    if (loginTime) {
+        document.getElementById("loginTime").innerText = "Logged in: " + loginTime;
+    }
+
+});
+</script>
+
+<script>
+function logoutUser() {
+    // Clear stored data
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("loginTime");
+    localStorage.removeItem("userRole");
+
+    // Redirect to login page
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

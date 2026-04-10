@@ -1,0 +1,3804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioTech Pro Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --stackly-global-color: #3772ff;
+            --stackly-global-color-rgb: 55, 114, 255;
+            --stackly-secondary-color: #001837;
+            --stackly-secondary-color-rgb: 0, 24, 55;
+            --stackly-light-color: #eaf1ff;
+            --stackly-white-color: #ffffff;
+            --stackly-white-color-rgb: 255, 255, 255;
+            --stackly-blackish-color: #011938;
+            --stackly-blackish-color-rgb: 1, 25, 56;
+            --stackly-link-color-normal: #001837;
+            --stackly-link-color-hover: #3772ff;
+            
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+            --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--stackly-light-color) 0%, #ffffff 50%, var(--stackly-light-color) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(55, 114, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--stackly-secondary-color);
+    z-index: 1000;
+    transition: var(--transition);
+
+    display: flex;              /* ✅ IMPORTANT */
+    flex-direction: column;     /* ✅ IMPORTANT */
+}
+.sidebar-menu {
+    flex: 1;              /* take remaining space */
+    overflow-y: auto;     /* scroll if needed */
+    padding: 20px 0;
+}
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--stackly-white-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--stackly-global-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .logo-text {
+            white-space: nowrap;
+            opacity: 1;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--stackly-white-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .toggle-btn:hover {
+            background: rgba(55, 114, 255, 0.2);
+            color: var(--stackly-global-color);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-category {
+            padding: 0 20px 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-category {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .menu-item {
+            position: relative;
+            margin: 4px 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .menu-item.active {
+            background: var(--stackly-global-color);
+        }
+
+        .menu-item:hover:not(.active) {
+            background: rgba(55, 114, 255, 0.1);
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            gap: 12px;
+            width: 100%;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .menu-item.active .menu-link {
+            color: var(--stackly-white-color);
+        }
+
+        .menu-link:hover {
+            color: var(--stackly-white-color);
+        }
+
+        .menu-icon {
+            font-size: 1.3rem;
+            min-width: 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .menu-text {
+            white-space: nowrap;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+        }
+
+        .menu-badge {
+            margin-left: auto;
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .menu-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 4px;
+            min-width: 8px;
+            height: 8px;
+            font-size: 0;
+        }
+
+        .menu-arrow {
+            margin-left: auto;
+            transition: var(--transition);
+        }
+
+        .menu-item.has-submenu.open .menu-arrow {
+            transform: rotate(90deg);
+        }
+
+        .sidebar.collapsed .menu-arrow {
+            display: none;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-item.open .submenu {
+            max-height: 300px;
+        }
+
+        .submenu-item {
+            padding: 12px 20px 12px 56px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .submenu-item:hover, .submenu-item.active {
+            color: var(--stackly-white-color);
+            background: rgba(55, 114, 255, 0.1);
+            padding-left: 60px;
+        }
+
+        .sidebar.collapsed .submenu {
+            display: none;
+        }
+
+        /* User Profile in Sidebar */
+     .sidebar-footer {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    position: relative;   /* ✅ REMOVE absolute */
+}
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--stackly-white-color);
+            font-weight: 600;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed .user-info {
+            opacity: 0;
+            width: 0;
+        }
+
+        .user-name {
+            color: var(--stackly-white-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .user-role {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background: var(--stackly-white-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 2px 20px rgba(0, 24, 55, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .breadcrumb a {
+            color: var(--stackly-global-color);
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Search Box */
+        .search-container {
+            position: relative;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--stackly-light-color);
+            border-radius: 12px;
+            padding: 10px 16px;
+            width: 300px;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--stackly-global-color);
+            background: var(--stackly-white-color);
+            box-shadow: 0 0 0 4px rgba(55, 114, 255, 0.1);
+        }
+
+        .search-box i {
+            color: rgba(0, 24, 55, 0.4);
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+            color: var(--stackly-secondary-color);
+        }
+
+        .search-box input::placeholder {
+            color: rgba(0, 24, 55, 0.4);
+        }
+
+        .search-filters {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 8px;
+            background: var(--stackly-white-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 24, 55, 0.15);
+            padding: 16px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .search-container.active .search-filters {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .filter-group {
+            margin-bottom: 12px;
+        }
+
+        .filter-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(0, 24, 55, 0.6);
+            margin-bottom: 6px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-chip {
+            padding: 6px 12px;
+            background: var(--stackly-light-color);
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-chip:hover, .filter-chip.active {
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-btn {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(55, 114, 255, 0.3);
+        }
+
+        .action-btn .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--stackly-global-color), #5a8cff);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(55, 114, 255, 0.15);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(55, 114, 255, 0.1);
+            color: var(--stackly-global-color);
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .stat-trend.up {
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        .stat-trend.down {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: rgba(0, 24, 55, 0.6);
+            font-size: 0.95rem;
+        }
+
+        .stat-chart {
+            margin-top: 16px;
+            height: 60px;
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: rgba(55, 114, 255, 0.2);
+            border-radius: 4px 4px 0 0;
+            transition: var(--transition);
+            animation: growUp 1s ease-out forwards;
+            transform-origin: bottom;
+            transform: scaleY(0);
+        }
+
+        .chart-bar:hover {
+            background: var(--stackly-global-color);
+        }
+
+        @keyframes growUp {
+            to { transform: scaleY(1); }
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(55, 114, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background: #d4e3ff;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: var(--stackly-white-color);
+        }
+
+        .btn-danger:hover {
+            background: #ff3344;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        .btn-success {
+            background: #2ed573;
+            color: var(--stackly-white-color);
+        }
+
+        .btn-success:hover {
+            background: #26b965;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(46, 213, 115, 0.4);
+        }
+
+        /* Data Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(0, 24, 55, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--stackly-light-color);
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--stackly-light-color);
+            font-size: 0.95rem;
+        }
+
+        .data-table tr {
+            transition: var(--transition);
+            animation: slideIn 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .data-table tr:hover {
+            background: rgba(55, 114, 255, 0.03);
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-details h4 {
+            font-size: 0.95rem;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-active {
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .status-inactive {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+
+        .action-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .table-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .table-action:hover {
+            background: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 10px;
+            background: var(--stackly-white-color);
+            color: var(--stackly-secondary-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .filter-select:focus {
+            border-color: var(--stackly-global-color);
+        }
+
+        .search-input-table {
+            padding: 10px 16px;
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 10px;
+            width: 250px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .search-input-table:focus {
+            border-color: var(--stackly-global-color);
+            box-shadow: 0 0 0 4px rgba(55, 114, 255, 0.1);
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-container {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, var(--stackly-light-color) 0%, #ffffff 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 16px;
+            height: 200px;
+            padding: 0 20px;
+        }
+
+        .big-bar {
+            width: 40px;
+            background: linear-gradient(to top, var(--stackly-global-color), #5a8cff);
+            border-radius: 8px 8px 0 0;
+            animation: barGrow 1s ease-out forwards;
+            transform-origin: bottom;
+            transform: scaleY(0);
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .big-bar:hover {
+            filter: brightness(1.2);
+            transform: scaleY(1.05);
+        }
+
+        .big-bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+        }
+
+        @keyframes barGrow {
+            to { transform: scaleY(1); }
+        }
+
+        /* Activity Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--stackly-light-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+            animation: fadeInLeft 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--stackly-global-color);
+            border: 3px solid var(--stackly-white-color);
+            box-shadow: 0 0 0 3px var(--stackly-global-color);
+        }
+
+        .timeline-content {
+            background: var(--stackly-light-color);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: rgba(0, 24, 55, 0.6);
+            margin-bottom: 4px;
+        }
+
+        .timeline-text {
+            font-size: 0.95rem;
+            color: var(--stackly-secondary-color);
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 24, 55, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--stackly-white-color);
+            border-radius: 20px;
+            padding: 32px;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.9) translateY(20px);
+            transition: var(--transition);
+            box-shadow: 0 25px 50px rgba(0, 24, 55, 0.2);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: #ff4757;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--stackly-global-color);
+            box-shadow: 0 0 0 4px rgba(55, 114, 255, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--stackly-white-color);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 24, 55, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+            border-left: 4px solid var(--stackly-global-color);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success { border-left-color: #2ed573; }
+        .toast.error { border-left-color: #ff4757; }
+        .toast.warning { border-left-color: #ffc107; }
+
+        /* 404 Page */
+        .page-404 {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--stackly-white-color);
+            z-index: 5000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .page-404.active {
+            display: flex;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 900;
+            color: var(--stackly-global-color);
+            line-height: 1;
+            margin-bottom: 20px;
+            position: relative;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        .error-message {
+            font-size: 1.5rem;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 30px;
+        }
+
+        .error-description {
+            color: rgba(0, 24, 55, 0.6);
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--stackly-white-color);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .dna-loader {
+            display: flex;
+            gap: 8px;
+            height: 60px;
+        }
+
+        .dna-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--stackly-global-color);
+            border-radius: 50%;
+            animation: dnaBounce 1.4s infinite ease-in-out both;
+        }
+
+        .dna-dot:nth-child(1) { animation-delay: -0.32s; }
+        .dna-dot:nth-child(2) { animation-delay: -0.16s; }
+        .dna-dot:nth-child(3) { animation-delay: 0s; }
+        .dna-dot:nth-child(4) { animation-delay: -0.16s; }
+        .dna-dot:nth-child(5) { animation-delay: -0.32s; }
+
+        @keyframes dnaBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Progress Ring */
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            margin: 20px auto;
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 1s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Grid Layouts for Different Sections */
+        .cards-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .cards-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .info-card {
+            background: var(--stackly-white-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            transition: var(--transition);
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(55, 114, 255, 0.1);
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(55, 114, 255, 0.1);
+            color: var(--stackly-global-color);
+        }
+
+        .info-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .info-card-subtitle {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .info-card-content {
+            color: rgba(0, 24, 55, 0.8);
+            line-height: 1.6;
+        }
+
+        /* Calendar Styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .calendar-day-header {
+            font-weight: 600;
+            color: rgba(0, 24, 55, 0.6);
+            padding: 12px;
+            font-size: 0.85rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: var(--stackly-light-color);
+        }
+
+        .calendar-day.active {
+            background: var(--stackly-global-color);
+            color: white;
+        }
+
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            background: #ff4757;
+            border-radius: 50%;
+        }
+
+        .calendar-day.other-month {
+            color: rgba(0, 24, 55, 0.3);
+        }
+
+        /* Settings Styles */
+        .settings-section {
+            margin-bottom: 32px;
+        }
+
+        .settings-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--stackly-light-color);
+        }
+
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--stackly-light-color);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-label {
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .settings-description {
+            font-size: 0.85rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: rgba(0, 24, 55, 0.2);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active {
+            background: var(--stackly-global-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active::after {
+            left: 27px;
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .team-card {
+            background: var(--stackly-white-color);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            transition: var(--transition);
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(55, 114, 255, 0.15);
+        }
+
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .team-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .team-role {
+            color: var(--stackly-global-color);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .team-stats {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--stackly-light-color);
+        }
+
+        .team-stat {
+            text-align: center;
+        }
+
+        .team-stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--stackly-secondary-color);
+        }
+
+        .team-stat-label {
+            font-size: 0.75rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        /* Inventory Grid */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .inventory-item {
+            background: var(--stackly-white-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 24, 55, 0.05);
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .inventory-item:hover {
+            border-color: var(--stackly-global-color);
+            transform: translateY(-3px);
+        }
+
+        .inventory-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--stackly-light-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 1.5rem;
+            color: var(--stackly-global-color);
+        }
+
+        .inventory-name {
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .inventory-stock {
+            font-size: 0.9rem;
+            color: rgba(0, 24, 55, 0.6);
+        }
+
+        .inventory-stock.low {
+            color: #ff4757;
+            font-weight: 600;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 2px solid var(--stackly-light-color);
+            background: var(--stackly-white-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background: var(--stackly-global-color);
+            border-color: var(--stackly-global-color);
+            color: var(--stackly-white-color);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar.collapsed + .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-toggle {
+                display: flex !important;
+            }
+            
+            .search-box {
+                width: 150px;
+            }
+            
+            .dashboard-grid, .cards-grid-3, .cards-grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mobile-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: none;
+            background: var(--stackly-light-color);
+            color: var(--stackly-secondary-color);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--stackly-light-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--stackly-global-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2563eb;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(0, 24, 55, 0.5);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            color: var(--stackly-light-color);
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            color: var(--stackly-secondary-color);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .quick-action-btn {
+            padding: 16px 24px;
+            background: var(--stackly-white-color);
+            border: 2px solid var(--stackly-light-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            color: var(--stackly-secondary-color);
+        }
+
+        .quick-action-btn:hover {
+            border-color: var(--stackly-global-color);
+            background: rgba(55, 114, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-btn i {
+            font-size: 1.25rem;
+            color: var(--stackly-global-color);
+        }
+
+        .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* center logo */
+    width: 100%;
+}
+
+.logo-img {
+    width: auto;
+    height: 62px;
+    object-fit: contain;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+/* Hover effect */
+.logo:hover .logo-img {
+    transform: scale(1.1);
+}
+
+
+@media (max-width: 768px) {
+
+    /* Fix main overflow */
+    body {
+        overflow-x: hidden;
+    }
+
+    .main-content,
+    .content,
+    .chart-container {
+        overflow-x: hidden;
+    }
+
+    /* Fix chart bars */
+    .chart-bars {
+        display: flex;
+        justify-content: space-between;
+        gap: 4px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .big-bar {
+        flex: 1;            /* ✅ auto fit */
+        min-width: 0;       /* ✅ prevent overflow */
+        max-width: 100%;
+    }
+
+    /* Prevent container overflow */
+    .chart-placeholder {
+        width: 100%;
+        overflow: hidden;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .calendar-grid {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px; /* reduce spacing */
+    }
+
+    .calendar-day-header {
+        font-size: 0.7rem;
+        padding: 6px 0;
+    }
+
+    .calendar-day {
+        font-size: 0.75rem;
+        padding: 8px 0;
+        aspect-ratio: auto;   /* ✅ remove square force */
+        height: 32px;         /* ✅ fixed height */
+    }
+
+    /* Fix section header buttons overflow */
+    .section-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .section-actions .btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    /* Prevent full section overflow */
+    .section-card {
+        overflow-x: hidden;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="dna-loader">
+            <div class="dna-dot"></div>
+            <div class="dna-dot"></div>
+            <div class="dna-dot"></div>
+            <div class="dna-dot"></div>
+            <div class="dna-dot"></div>
+        </div>
+        <div style="color: var(--stackly-secondary-color); font-weight: 600;">Loading Admin Dashboard...</div>
+    </div>
+
+    <!-- Background Animation -->
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="logo">
+    <img src="images/logo.webp" alt="Logo" class="logo-img">
+</a>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-category">Main Menu</div>
+            
+            <div class="menu-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+                <button class="menu-link">
+                    <i class="fas fa-th-large menu-icon"></i>
+                    <span class="menu-text">Dashboard</span>
+                </button>
+            </div>
+
+            <div class="menu-item has-submenu" data-page="research">
+                <button class="menu-link" onclick="toggleSubmenu(this.parentElement)">
+                    <i class="fas fa-flask menu-icon"></i>
+                    <span class="menu-text">Research</span>
+                    <i class="fas fa-chevron-right menu-arrow"></i>
+                </button>
+                <div class="submenu">
+                    <button class="submenu-item" onclick="navigateTo('projects')">
+                        <i class="fas fa-folder"></i> Projects
+                    </button>
+                    <button class="submenu-item" onclick="navigateTo('experiments')">
+                        <i class="fas fa-vial"></i> Experiments
+                    </button>
+                    <button class="submenu-item" onclick="navigateTo('publications')">
+                        <i class="fas fa-book"></i> Publications
+                    </button>
+                </div>
+            </div>
+
+            <div class="menu-item has-submenu" data-page="team">
+                <button class="menu-link" onclick="toggleSubmenu(this.parentElement)">
+                    <i class="fas fa-users menu-icon"></i>
+                    <span class="menu-text">Team</span>
+                    <span class="menu-badge">3</span>
+                    <i class="fas fa-chevron-right menu-arrow"></i>
+                </button>
+                <div class="submenu">
+                    <button class="submenu-item" onclick="navigateTo('members')">
+                        <i class="fas fa-user-friends"></i> All Members
+                    </button>
+                    <button class="submenu-item" onclick="navigateTo('departments')">
+                        <i class="fas fa-building"></i> Departments
+                    </button>
+                </div>
+            </div>
+
+            <div class="menu-item" data-page="analytics" onclick="navigateTo('analytics')">
+                <button class="menu-link">
+                    <i class="fas fa-chart-line menu-icon"></i>
+                    <span class="menu-text">Analytics</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="schedule" onclick="navigateTo('schedule')">
+                <button class="menu-link">
+                    <i class="fas fa-calendar menu-icon"></i>
+                    <span class="menu-text">Schedule</span>
+                    <span class="menu-badge">5</span>
+                </button>
+            </div>
+
+            <div class="menu-category">Management</div>
+
+            <div class="menu-item" data-page="inventory" onclick="navigateTo('inventory')">
+                <button class="menu-link">
+                    <i class="fas fa-box menu-icon"></i>
+                    <span class="menu-text">Inventory</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="reports" onclick="navigateTo('reports')">
+                <button class="menu-link">
+                    <i class="fas fa-file-alt menu-icon"></i>
+                    <span class="menu-text">Reports</span>
+                </button>
+            </div>
+
+            <div class="menu-item" data-page="settings" onclick="navigateTo('settings')">
+                <button class="menu-link">
+                    <i class="fas fa-cog menu-icon"></i>
+                    <span class="menu-text">Settings</span>
+                </button>
+            </div>
+            <div class="menu-item">
+    <button class="menu-link" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt menu-icon" style="color:#ff4757;"></i>
+        <span class="menu-text">Logout</span>
+    </button>
+</div>
+        </div>
+
+       <div class="sidebar-footer">
+            <div class="user-profile" onclick="navigateTo('profile')">
+                <div class="user-avatar">AN</div>
+                <div class="user-info">
+                    <div class="user-name" id="displayEmail">user@email.com</div>
+                    <div class="user-role">Admin</div>
+                </div>
+            </div>
+        </div> 
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div>
+                    <h1 class="page-title" id="pageTitle">
+                        <i class="fas fa-th-large" style="color: var(--stackly-global-color);"></i>
+                        Dashboard
+                    </h1>
+                </div>
+            </div>
+
+            <div class="header-right">
+
+       <div class="header-actions">
+
+    <a href="404-admin.html" class="action-btn">
+        <i class="fas fa-bell"></i>
+        <span class="badge">3</span>
+    </a>
+
+    <a href="404-admin.html" class="action-btn">
+        <i class="fas fa-envelope"></i>
+        <span class="badge">2</span>
+    </a>
+
+</div>
+            </div>
+        </header>
+
+        <!-- Content Sections -->
+        <div class="content">
+            <!-- DASHBOARD SECTION -->
+            <div class="content-section active" id="dashboard">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon"><i class="fas fa-flask"></i></div>
+                            <div class="stat-trend up"><i class="fas fa-arrow-up"></i><span>12%</span></div>
+                        </div>
+                        <div class="stat-value" id="stat1">2,847</div>
+                        <div class="stat-label">Active Experiments</div>
+                        <div class="stat-chart">
+                            <div class="chart-bar" style="height: 40%; animation-delay: 0s;"></div>
+                            <div class="chart-bar" style="height: 60%; animation-delay: 0.1s;"></div>
+                            <div class="chart-bar" style="height: 45%; animation-delay: 0.2s;"></div>
+                            <div class="chart-bar" style="height: 80%; animation-delay: 0.3s;"></div>
+                            <div class="chart-bar" style="height: 65%; animation-delay: 0.4s;"></div>
+                            <div class="chart-bar" style="height: 90%; animation-delay: 0.5s;"></div>
+                            <div class="chart-bar" style="height: 75%; animation-delay: 0.6s;"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-trend up"><i class="fas fa-arrow-up"></i><span>8%</span></div>
+                        </div>
+                        <div class="stat-value" id="stat2">1,234</div>
+                        <div class="stat-label">Completed Tests</div>
+                        <div class="stat-chart">
+                            <div class="chart-bar" style="height: 30%; background: rgba(46, 213, 115, 0.3); animation-delay: 0s;"></div>
+                            <div class="chart-bar" style="height: 50%; background: rgba(46, 213, 115, 0.3); animation-delay: 0.1s;"></div>
+                            <div class="chart-bar" style="height: 70%; background: rgba(46, 213, 115, 0.3); animation-delay: 0.2s;"></div>
+                            <div class="chart-bar" style="height: 45%; background: rgba(46, 213, 115, 0.3); animation-delay: 0.3s;"></div>
+                            <div class="chart-bar" style="height: 85%; background: rgba(46, 213, 115, 0.3); animation-delay: 0.4s;"></div>
+                            <div class="chart-bar" style="height: 60%; background: rgba(46, 213, 115, 0.3); animation-delay: 0.5s;"></div>
+                            <div class="chart-bar" style="height: 95%; background: rgba(46, 213, 115, 0.3); animation-delay: 0.6s;"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fas fa-clock"></i></div>
+                            <div class="stat-trend down"><i class="fas fa-arrow-down"></i><span>3%</span></div>
+                        </div>
+                        <div class="stat-value" id="stat3">456</div>
+                        <div class="stat-label">Pending Reviews</div>
+                        <div class="stat-chart">
+                            <div class="chart-bar" style="height: 60%; background: rgba(255, 193, 7, 0.3); animation-delay: 0s;"></div>
+                            <div class="chart-bar" style="height: 40%; background: rgba(255, 193, 7, 0.3); animation-delay: 0.1s;"></div>
+                            <div class="chart-bar" style="height: 55%; background: rgba(255, 193, 7, 0.3); animation-delay: 0.2s;"></div>
+                            <div class="chart-bar" style="height: 30%; background: rgba(255, 193, 7, 0.3); animation-delay: 0.3s;"></div>
+                            <div class="chart-bar" style="height: 45%; background: rgba(255, 193, 7, 0.3); animation-delay: 0.4s;"></div>
+                            <div class="chart-bar" style="height: 35%; background: rgba(255, 193, 7, 0.3); animation-delay: 0.5s;"></div>
+                            <div class="chart-bar" style="height: 50%; background: rgba(255, 193, 7, 0.3); animation-delay: 0.6s;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="section-header">
+                            <h3 class="section-title"><i class="fas fa-chart-bar" style="color: var(--stackly-global-color);"></i>Research Progress</h3>
+                            <div class="section-actions">
+                             <button class="btn btn-secondary" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-sync-alt"></i> Refresh
+</button>
+
+<button class="btn btn-primary" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-download"></i> Export
+</button>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <div class="chart-bars">
+                                <div class="big-bar" style="height: 60%;" data-value="60%"></div>
+                                <div class="big-bar" style="height: 85%;" data-value="85%"></div>
+                                <div class="big-bar" style="height: 45%;" data-value="45%"></div>
+                                <div class="big-bar" style="height: 90%;" data-value="90%"></div>
+                                <div class="big-bar" style="height: 75%;" data-value="75%"></div>
+                                <div class="big-bar" style="height: 95%;" data-value="95%"></div>
+                                <div class="big-bar" style="height: 55%;" data-value="55%"></div>
+                                <div class="big-bar" style="height: 80%;" data-value="80%"></div>
+                            </div>
+                            <div style="display: flex; gap: 16px; margin-top: 10px; font-size: 0.8rem; color: rgba(0,24,55,0.6);">
+                                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="section-header">
+                            <h3 class="section-title"><i class="fas fa-bullseye" style="color: var(--stackly-global-color);"></i>Success Rate</h3>
+                        </div>
+                        <div style="text-align: center; padding: 20px;">
+                            <svg class="progress-ring" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(55,114,255,0.1)" stroke-width="8"/>
+                                <circle class="progress-ring-circle" cx="60" cy="60" r="54" fill="none" stroke="var(--stackly-global-color)" 
+                                        stroke-width="8" stroke-linecap="round" stroke-dasharray="339.292" stroke-dashoffset="339.292" id="progressCircle"/>
+                            </svg>
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--stackly-global-color); margin-top: -90px; position: relative; z-index: 1;" id="successRate">0%</div>
+                            <div style="color: rgba(0,24,55,0.6); font-size: 0.9rem; margin-top: 70px;">Overall Success Rate</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-history" style="color: var(--stackly-global-color);"></i>Recent Activity</h3>
+                        <button class="btn btn-secondary" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-trash"></i> Clear
+</button>
+                    </div>
+                    <div class="timeline" id="timeline">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESEARCH - PROJECTS SECTION -->
+            <div class="content-section" id="projects">
+                <div class="quick-actions">
+           <button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-plus"></i> New Project
+</button>
+
+<button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-file-import"></i> Import
+</button>
+
+<button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-file-export"></i> Export
+</button>
+                </div>
+
+                <div class="cards-grid-3">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon"><i class="fas fa-dna"></i></div>
+                            <div>
+                                <div class="info-card-title">Genome Sequencing</div>
+                                <div class="info-card-subtitle">Project #2024-001</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>Advanced CRISPR-based genome editing research for therapeutic applications.</p>
+                            <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                <span class="status-badge status-active">Active</span>
+                                <span style="font-weight: 600; color: var(--stackly-global-color);">75% Complete</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;"><i class="fas fa-pills"></i></div>
+                            <div>
+                                <div class="info-card-title">Drug Discovery</div>
+                                <div class="info-card-subtitle">Project #2024-002</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>AI-driven molecular screening for novel antibiotic compounds.</p>
+                            <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                <span class="status-badge status-active">Active</span>
+                                <span style="font-weight: 600; color: #2ed573;">90% Complete</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+    <div class="info-card-header">
+        <div class="info-card-icon" style="background: rgba(255, 71, 87, 0.1); color: #ff4757;">
+            <i class="fas fa-microscope"></i>
+        </div>
+        <div>
+            <div class="info-card-title">Cell Analysis</div>
+            <div class="info-card-subtitle">Project #2024-004</div>
+        </div>
+    </div>
+    <div class="info-card-content">
+        <p>Advanced cell imaging and analysis using AI-driven microscopy techniques.</p>
+        <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span class="status-badge status-active">Active</span>
+            <span style="font-weight: 600; color: #ff4757;">60% Complete</span>
+        </div>
+    </div>
+</div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fas fa-syringe"></i></div>
+                            <div>
+                                <div class="info-card-title">Vaccine Development</div>
+                                <div class="info-card-subtitle">Project #2024-003</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>mRNA vaccine platform development for emerging viral pathogens.</p>
+                            <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                <span class="status-badge status-pending">Pending</span>
+                                <span style="font-weight: 600; color: #ffc107;">45% Complete</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-list" style="color: var(--stackly-global-color);"></i>All Projects</h3>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Project ID</th>
+                                    <th>Name</th>
+                                    <th>Lead Researcher</th>
+                                    <th>Start Date</th>
+                                    <th>Status</th>
+                                    <th>Budget</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectsTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESEARCH - EXPERIMENTS SECTION -->
+            <div class="content-section" id="experiments">
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="openModal('experiment')">
+                        <i class="fas fa-plus"></i> New Experiment
+                    </button>
+                    <button class="quick-action-btn" onclick="showToast('Starting batch operation...', 'info')">
+                        <i class="fas fa-layer-group"></i> Batch Operations
+                    </button>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-vial" style="color: var(--stackly-global-color);"></i>Experiments</h3>
+                        <div class="filter-bar" style="margin: 0;">
+                            <input type="text" class="search-input-table" placeholder="Search experiments..." id="expSearch" onkeyup="filterExperiments()">
+                            <select class="filter-select" onchange="filterExperiments()">
+                                <option value="">All Types</option>
+                                <option value="genetic">Genetic</option>
+                                <option value="chemical">Chemical</option>
+                                <option value="clinical">Clinical</option>
+                            </select>
+                            <select class="filter-select" onchange="filterExperiments()">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="experimentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Experiment</th>
+                                    <th>Researcher</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Progress</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="experimentsTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="expPagination">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESEARCH - PUBLICATIONS SECTION -->
+            <div class="content-section" id="publications">
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-plus"></i> New Publication
+</button>
+
+<button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-quote-right"></i> Citation Report
+</button>
+                </div>
+
+                <div class="cards-grid-3">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon"><i class="fas fa-file-alt"></i></div>
+                            <div>
+                                <div class="info-card-title">Nature Biotechnology</div>
+                                <div class="info-card-subtitle">Published: Jan 2026</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p><strong>Novel CRISPR-Cas9 Variants</strong></p>
+                            <p style="margin-top: 8px; font-size: 0.9rem;">Enhanced precision genome editing using engineered Cas9 nucleases...</p>
+                            <div style="margin-top: 12px; display: flex; gap: 16px;">
+                                <span><i class="fas fa-eye"></i> 1,234 views</span>
+                                <span><i class="fas fa-download"></i> 456 downloads</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;"><i class="fas fa-file-alt"></i></div>
+                            <div>
+                                <div class="info-card-title">Cell</div>
+                                <div class="info-card-subtitle">Published: Dec 2025</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p><strong>Protein Folding Dynamics</strong></p>
+                            <p style="margin-top: 8px; font-size: 0.9rem;">Real-time observation of protein folding using cryo-EM techniques...</p>
+                            <div style="margin-top: 12px; display: flex; gap: 16px;">
+                                <span><i class="fas fa-eye"></i> 2,567 views</span>
+                                <span><i class="fas fa-download"></i> 892 downloads</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+    <div class="info-card-header">
+        <div class="info-card-icon" style="background: rgba(55, 114, 255, 0.1); color: #3772ff;">
+            <i class="fas fa-file-alt"></i>
+        </div>
+        <div>
+            <div class="info-card-title">The Lancet</div>
+            <div class="info-card-subtitle">Published: Feb 2026</div>
+        </div>
+    </div>
+    <div class="info-card-content">
+        <p><strong>mRNA Vaccine Innovations</strong></p>
+        <p style="margin-top: 8px; font-size: 0.9rem;">
+            Breakthrough developments in next-generation mRNA vaccine delivery systems...
+        </p>
+        <div style="margin-top: 12px; display: flex; gap: 16px;">
+            <span><i class="fas fa-eye"></i> 3,120 views</span>
+            <span><i class="fas fa-download"></i> 1,045 downloads</span>
+        </div>
+    </div>
+</div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fas fa-file-alt"></i></div>
+                            <div>
+                                <div class="info-card-title">Science</div>
+                                <div class="info-card-subtitle">Under Review</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p><strong>Synthetic Biology Approaches</strong></p>
+                            <p style="margin-top: 8px; font-size: 0.9rem;">Engineering bacterial consortia for bioremediation applications...</p>
+                            <div style="margin-top: 12px; display: flex; gap: 16px;">
+                                <span class="status-badge status-pending">Pending Review</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEAM - MEMBERS SECTION -->
+            <div class="content-section" id="members">
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-user-plus"></i> Add Member
+</button>
+
+<button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-envelope"></i> Invite
+</button>
+                </div>
+
+                <div class="team-grid" id="teamGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- TEAM - DEPARTMENTS SECTION -->
+            <div class="content-section" id="departments">
+                <div class="cards-grid-4">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon"><i class="fas fa-dna"></i></div>
+                            <div>
+                                <div class="info-card-title">Genomics</div>
+                                <div class="info-card-subtitle">12 Members</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>Gene sequencing, editing, and analysis research division.</p>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+        onclick="window.location.href='404-admin.html'">
+    View Details
+</button>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;"><i class="fas fa-pills"></i></div>
+                            <div>
+                                <div class="info-card-title">Pharmacology</div>
+                                <div class="info-card-subtitle">8 Members</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>Drug discovery and pharmaceutical research division.</p>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+        onclick="window.location.href='404-admin.html'">
+    View Details
+</button>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fas fa-microscope"></i></div>
+                            <div>
+                                <div class="info-card-title">Microbiology</div>
+                                <div class="info-card-subtitle">15 Members</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>Bacterial and viral research, pathogen studies.</p>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+        onclick="window.location.href='404-admin.html'">
+    View Details
+</button>
+                        </div>
+                    </div>
+                    <div class="info-card">
+    <div class="info-card-header">
+        <div class="info-card-icon" style="background: rgba(0, 184, 148, 0.1); color: #00b894;">
+            <i class="fas fa-heartbeat"></i>
+        </div>
+        <div>
+            <div class="info-card-title">Clinical Research</div>
+            <div class="info-card-subtitle">10 Members</div>
+        </div>
+    </div>
+    <div class="info-card-content">
+        <p>Human trials, patient studies, and clinical data evaluation.</p>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+                onclick="window.location.href='404-admin.html'">
+            View Details
+        </button>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-card-header">
+        <div class="info-card-icon" style="background: rgba(9, 132, 227, 0.1); color: #0984e3;">
+            <i class="fas fa-vials"></i>
+        </div>
+        <div>
+            <div class="info-card-title">Biochemistry</div>
+            <div class="info-card-subtitle">9 Members</div>
+        </div>
+    </div>
+    <div class="info-card-content">
+        <p>Study of chemical processes and substances.</p>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+                onclick="window.location.href='404-admin.html'">
+            View Details
+        </button>
+    </div>
+</div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon" style="background: rgba(255, 71, 87, 0.1); color: #ff4757;"><i class="fas fa-chart-line"></i></div>
+                            <div>
+                                <div class="info-card-title">Bioinformatics</div>
+                                <div class="info-card-subtitle">6 Members</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>Data analysis, computational biology, and AI research.</p>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+        onclick="window.location.href='404-admin.html'">
+    View Details
+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS SECTION -->
+            <div class="content-section" id="analytics">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                        </div>
+                        <div class="stat-value">94.2%</div>
+                        <div class="stat-label">Research Efficiency</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;"><i class="fas fa-check-circle"></i></div>
+                        </div>
+                        <div class="stat-value">87.5%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fas fa-clock"></i></div>
+                        </div>
+                        <div class="stat-value">12.3 days</div>
+                        <div class="stat-label">Avg. Completion Time</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="section-header">
+                            <h3 class="section-title"><i class="fas fa-chart-area" style="color: var(--stackly-global-color);"></i>Research Output Over Time</h3>
+                        </div>
+                        <div class="chart-placeholder">
+                            <div class="chart-bars">
+                                <div class="big-bar" style="height: 45%;" data-value="45"></div>
+                                <div class="big-bar" style="height: 60%;" data-value="60"></div>
+                                <div class="big-bar" style="height: 75%;" data-value="75"></div>
+                                <div class="big-bar" style="height: 50%;" data-value="50"></div>
+                                <div class="big-bar" style="height: 85%;" data-value="85"></div>
+                                <div class="big-bar" style="height: 95%;" data-value="95"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="section-header">
+                            <h3 class="section-title"><i class="fas fa-pie-chart" style="color: var(--stackly-global-color);"></i>Resource Allocation</h3>
+                        </div>
+                        <div style="padding: 40px; text-align: center;">
+                            <div style="width: 200px; height: 200px; margin: 0 auto; border-radius: 50%; background: conic-gradient(var(--stackly-global-color) 0deg 120deg, #2ed573 120deg 240deg, #ffc107 240deg 360deg); position: relative;">
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">100%</div>
+                            </div>
+                            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 20px;">
+                                <span><span style="display: inline-block; width: 12px; height: 12px; background: var(--stackly-global-color); border-radius: 50%; margin-right: 6px;"></span>Research</span>
+                                <span><span style="display: inline-block; width: 12px; height: 12px; background: #2ed573; border-radius: 50%; margin-right: 6px;"></span>Development</span>
+                                <span><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 50%; margin-right: 6px;"></span>Operations</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCHEDULE SECTION -->
+            <div class="content-section" id="schedule">
+                <div class="section-card">
+                    <div class="section-header">
+                      <span id="calendarTitle" style="font-weight: 600; font-size: 1.1rem;"></span>
+                        <div class="section-actions">
+                           <button class="btn btn-secondary" onclick="changeMonth(-1)">
+    <i class="fas fa-chevron-left"></i>
+</button>
+
+<button class="btn btn-secondary" onclick="changeMonth(1)">
+    <i class="fas fa-chevron-right"></i>
+</button>
+
+<button class="btn btn-primary" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-plus"></i> Add Event
+</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid">
+    <!-- Dynamic calendar -->
+</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-list" style="color: var(--stackly-global-color);"></i>Upcoming Events</h3>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-item" style="animation-delay: 0s;">
+                            <div class="timeline-dot" style="background: #ff4757;"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Today, 2:00 PM</div>
+                                <div class="timeline-text">Project Review Meeting - Genome Sequencing</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.1s;">
+                            <div class="timeline-dot" style="background: #ffc107;"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Tomorrow, 10:00 AM</div>
+                                <div class="timeline-text">Lab Safety Training Session</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item" style="animation-delay: 0.2s;">
+                            <div class="timeline-dot" style="background: #2ed573;"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-time">Apr 12, 3:00 PM</div>
+                                <div class="timeline-text">Research Symposium Presentation</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INVENTORY SECTION -->
+            <div class="content-section" id="inventory">
+                <div class="quick-actions">
+                <button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-plus"></i> Add Item
+</button>
+
+<button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-file-alt"></i> Report
+</button>
+
+<button class="quick-action-btn" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-barcode"></i> Scan
+</button>
+                </div>
+
+                <div class="inventory-grid">
+                    <div class="inventory-item">
+                        <div class="inventory-icon"><i class="fas fa-vial"></i></div>
+                        <div class="inventory-name">PCR Tubes</div>
+                        <div class="inventory-stock">Stock: 2,450 units</div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-icon"><i class="fas fa-syringe"></i></div>
+                        <div class="inventory-name">Pipette Tips</div>
+                        <div class="inventory-stock">Stock: 15,000 units</div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-icon"><i class="fas fa-flask"></i></div>
+                        <div class="inventory-name">Media Bottles</div>
+                        <div class="inventory-stock low">Stock: 45 units (Low)</div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-icon"><i class="fas fa-microscope"></i></div>
+                        <div class="inventory-name">Slides</div>
+                        <div class="inventory-stock">Stock: 5,000 units</div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-icon"><i class="fas fa-dna"></i></div>
+                        <div class="inventory-name">DNA Markers</div>
+                        <div class="inventory-stock">Stock: 120 units</div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-icon"><i class="fas fa-pills"></i></div>
+                        <div class="inventory-name">Antibiotics</div>
+                        <div class="inventory-stock low">Stock: 12 units (Low)</div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-icon"><i class="fas fa-tint"></i></div>
+                        <div class="inventory-name">Buffer Solutions</div>
+                        <div class="inventory-stock">Stock: 85 units</div>
+                    </div>
+                    <div class="inventory-item">
+                        <div class="inventory-icon"><i class="fas fa-burn"></i></div>
+                        <div class="inventory-name">Ethanol</div>
+                        <div class="inventory-stock">Stock: 200 L</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORTS SECTION -->
+            <div class="content-section" id="reports">
+                <div class="cards-grid-3">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div>
+                                <div class="info-card-title">Monthly Research Report</div>
+                                <div class="info-card-subtitle">Generated: Apr 1, 2026</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>Comprehensive overview of all research activities, outcomes, and metrics for March 2026.</p>
+                              <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+                onclick="window.location.href='404-admin.html'">
+            <i class="fas fa-download"></i> Download PDF
+        </button>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon" style="background: rgba(46, 213, 115, 0.1); color: #2ed573;"><i class="fas fa-file-excel"></i></div>
+                            <div>
+                                <div class="info-card-title">Financial Summary</div>
+                                <div class="info-card-subtitle">Generated: Mar 28, 2026</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>Budget allocation, expenditure tracking, and financial projections for Q1 2026.</p>
+                              <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+                onclick="window.location.href='404-admin.html'">
+            <i class="fas fa-download"></i> Download Excel
+        </button>
+                        </div>
+                    </div>
+                    <div class="info-card">
+    <div class="info-card-header">
+        <div class="info-card-icon" style="background: rgba(9, 132, 227, 0.1); color: #0984e3;">
+            <i class="fas fa-file-word"></i>
+        </div>
+        <div>
+            <div class="info-card-title">Annual Research Report</div>
+            <div class="info-card-subtitle">Generated: Dec 31, 2025</div>
+        </div>
+    </div>
+    <div class="info-card-content">
+        <p>Detailed annual report covering research progress, achievements, and future roadmap.</p>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+                onclick="window.location.href='404-admin.html'">
+            <i class="fas fa-download"></i> Download DOC
+        </button>
+    </div>
+</div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <div class="info-card-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fas fa-file-powerpoint"></i></div>
+                            <div>
+                                <div class="info-card-title">Quarterly Presentation</div>
+                                <div class="info-card-subtitle">Generated: Mar 31, 2026</div>
+                            </div>
+                        </div>
+                        <div class="info-card-content">
+                            <p>Executive summary presentation for stakeholders and board members.</p>
+                              <button class="btn btn-primary" style="width: 100%; margin-top: 12px;"
+                onclick="window.location.href='404-admin.html'">
+            <i class="fas fa-download"></i> Download PPT
+        </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title"><i class="fas fa-history" style="color: var(--stackly-global-color);"></i>Report History</h3>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Report Name</th>
+                                    <th>Type</th>
+                                    <th>Generated By</th>
+                                    <th>Date</th>
+                                    <th>Size</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><i class="fas fa-file-pdf" style="color: #ff4757; margin-right: 8px;"></i> Safety Audit Q1</td>
+                                    <td>PDF</td>
+                                    <td>Dr. Sarah Chen</td>
+                                    <td>Apr 5, 2026</td>
+                                    <td>2.4 MB</td>
+                                    <td class="action-cell">
+                                      <button class="table-action" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-download"></i>
+</button>
+
+<button class="table-action" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-share"></i>
+</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-file-excel" style="color: #2ed573; margin-right: 8px;"></i> Inventory Status</td>
+                                    <td>Excel</td>
+                                    <td>Dr. Mike Ross</td>
+                                    <td>Apr 3, 2026</td>
+                                    <td>856 KB</td>
+                                    <td class="action-cell">
+                                        <button class="table-action" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-download"></i>
+</button>
+
+<button class="table-action" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-share"></i>
+</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS SECTION -->
+            <div class="content-section" id="settings">
+                <div class="section-card">
+                    <div class="settings-section">
+                        <div class="settings-title">Account Settings</div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Email Notifications</div>
+                                <div class="settings-description">Receive email updates about project status</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">SMS Alerts</div>
+                                <div class="settings-description">Get text messages for critical alerts</div>
+                            </div>
+                            <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Two-Factor Authentication</div>
+                                <div class="settings-description">Add an extra layer of security</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <div class="settings-title">Preferences</div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Language</div>
+                                <div class="settings-description">Select your preferred language</div>
+                            </div>
+                            <select class="filter-select" style="width: 150px;">
+                                <option>English</option>
+                                <option>Spanish</option>
+                                <option>French</option>
+                                <option>German</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Time Zone</div>
+                                <div class="settings-description">Set your local time zone</div>
+                            </div>
+                            <select class="filter-select" style="width: 200px;">
+                                <option>UTC-08:00 Pacific Time</option>
+                                <option>UTC-05:00 Eastern Time</option>
+                                <option>UTC+00:00 GMT</option>
+                                <option>UTC+01:00 Central European</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label">Data Export Format</div>
+                                <div class="settings-description">Default format for downloading data</div>
+                            </div>
+                            <select class="filter-select" style="width: 150px;">
+                                <option>CSV</option>
+                                <option>Excel</option>
+                                <option>JSON</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <div class="settings-title">Danger Zone</div>
+                        <div class="settings-item">
+                            <div>
+                                <div class="settings-label" style="color: #ff4757;">Delete Account</div>
+                                <div class="settings-description">Permanently delete your account and all data</div>
+                            </div>
+                            <button class="btn btn-danger"
+        onclick="window.location.href='404-admin.html'">
+    Delete
+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE SECTION -->
+            <div class="content-section" id="profile">
+                <div class="section-card" style="max-width: 600px; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 32px;">
+                        <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white; font-size: 3rem; font-weight: 700;">JD</div>
+                        <h2 style="color: var(--stackly-secondary-color); margin-bottom: 4px;">Dr. John Doe</h2>
+                        <p style="color: rgba(0,24,55,0.6);">Lead Researcher | Genomics Department</p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); showToast('Profile updated successfully!', 'success');">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" value="Dr. John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" value="john.doe@biotech.pro">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-input" value="+1 (555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-textarea">Senior researcher with 15 years of experience in molecular biology and genetic engineering.</textarea>
+                        </div>
+                      <button type="submit" class="btn btn-primary" style="width: 100%;"
+        onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-save"></i> Save Changes
+</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+    <script>
+        // Data
+        const experiments = [
+            { id: 1, name: "CRISPR Gene Editing v2.0", researcher: "Dr. Sarah Chen", type: "genetic", status: "active", progress: 75, date: "2026-04-08" },
+            { id: 2, name: "Protein Synthesis Analysis", researcher: "Dr. Mike Ross", type: "chemical", status: "completed", progress: 100, date: "2026-04-07" },
+            { id: 3, name: "Vaccine Trial Phase III", researcher: "Dr. Emily Watson", type: "clinical", status: "active", progress: 60, date: "2026-04-06" },
+            { id: 4, name: "Cell Culture Optimization", researcher: "Dr. James Wilson", type: "genetic", status: "pending", progress: 30, date: "2026-04-05" },
+            { id: 5, name: "Enzyme Kinetics Study", researcher: "Dr. Lisa Park", type: "chemical", status: "active", progress: 85, date: "2026-04-04" },
+            { id: 6, name: "Antibiotic Resistance", researcher: "Dr. Tom Brown", type: "clinical", status: "completed", progress: 100, date: "2026-04-03" },
+            { id: 7, name: "DNA Sequencing Project", researcher: "Dr. Anna Lee", type: "genetic", status: "active", progress: 45, date: "2026-04-02" },
+            { id: 8, name: "Compound Stability Test", researcher: "Dr. David Kim", type: "chemical", status: "pending", progress: 15, date: "2026-04-01" }
+        ];
+
+        const projects = [
+            { id: "2024-001", name: "Genome Sequencing", lead: "Dr. Sarah Chen", date: "2024-01-15", status: "active", budget: "$450,000" },
+            { id: "2024-002", name: "Drug Discovery", lead: "Dr. Mike Ross", date: "2024-02-01", status: "active", budget: "$680,000" },
+            { id: "2024-003", name: "Vaccine Development", lead: "Dr. Emily Watson", date: "2024-03-10", status: "pending", budget: "$1,200,000" },
+            { id: "2024-004", name: "Protein Analysis", lead: "Dr. James Wilson", date: "2024-01-20", status: "completed", budget: "$320,000" }
+        ];
+
+        const teamMembers = [
+            { name: "Dr. Sarah Chen", role: "Senior Researcher", dept: "Genomics", projects: 12, publications: 8 },
+            { name: "Dr. Mike Ross", role: "Lab Director", dept: "Pharmacology", projects: 8, publications: 15 },
+            { name: "Dr. Emily Watson", role: "Research Scientist", dept: "Microbiology", projects: 6, publications: 5 },
+            { name: "Dr. James Wilson", role: "Bioinformatician", dept: "Bioinformatics", projects: 10, publications: 12 },
+            { name: "Dr. Lisa Park", role: "Chemist", dept: "Pharmacology", projects: 7, publications: 6 },
+            { name: "Dr. Tom Brown", role: "Clinical Researcher", dept: "Genomics", projects: 9, publications: 10 }
+        ];
+
+        const activities = [
+            { time: "2 minutes ago", text: "New experiment 'CRISPR Gene Editing v2.0' created by Dr. Sarah Chen", icon: "plus", color: "#2ed573" },
+            { time: "15 minutes ago", text: "Protein Synthesis Analysis marked as completed", icon: "check", color: "#2ed573" },
+            { time: "1 hour ago", text: "Vaccine Trial Phase III updated to 60% progress", icon: "chart-line", color: "#3772ff" },
+            { time: "3 hours ago", text: "Critical alert: Temperature variance in Lab 3", icon: "exclamation", color: "#ff4757" },
+            { time: "5 hours ago", text: "New team member Dr. Lisa Park added to project", icon: "user-plus", color: "#3772ff" },
+            { time: "Yesterday", text: "Monthly report generated and sent to stakeholders", icon: "file-alt", color: "#ffc107" }
+        ];
+
+        let currentPage = 1;
+        let filteredExperiments = [...experiments];
+        let currentModalType = '';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                animateCounters();
+                animateProgressRing();
+                renderTimeline();
+                renderExperiments();
+                renderProjects();
+                renderTeam();
+                createParticles();
+            }, 1500);
+        });
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Navigation
+        function navigateTo(page) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show target section
+            const targetSection = document.getElementById(page);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Update sidebar active state
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === page || item.querySelector(`[onclick*="${page}"]`)) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Update header
+            updateHeader(page);
+            
+            // Close mobile sidebar
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            
+            // Show toast
+            const pageNames = {
+                dashboard: 'Dashboard',
+                projects: 'Research Projects',
+                experiments: 'Experiments',
+                publications: 'Publications',
+                members: 'Team Members',
+                departments: 'Departments',
+                analytics: 'Analytics',
+                schedule: 'Schedule',
+                inventory: 'Inventory',
+                reports: 'Reports',
+                settings: 'Settings',
+                profile: 'Profile'
+            };
+            showToast(`Navigated to ${pageNames[page] || page}`, 'success');
+            
+            // Re-trigger animations
+            if (page === 'dashboard') {
+                setTimeout(() => {
+                    animateCounters();
+                    animateProgressRing();
+                }, 100);
+            }
+        }
+
+        function updateHeader(page) {
+            const titles = {
+                dashboard: { title: 'Dashboard', icon: 'th-large', breadcrumb: 'Dashboard' },
+                projects: { title: 'Projects', icon: 'folder', breadcrumb: 'Projects' },
+                experiments: { title: 'Experiments', icon: 'vial', breadcrumb: 'Experiments' },
+                publications: { title: 'Publications', icon: 'book', breadcrumb: 'Publications' },
+                members: { title: 'Team', icon: 'users', breadcrumb: 'Team / Members' },
+                departments: { title: 'Departments', icon: 'building', breadcrumb: 'Team / Departments' },
+                analytics: { title: 'Analytics', icon: 'chart-line', breadcrumb: 'Analytics' },
+                schedule: { title: 'Schedule', icon: 'calendar', breadcrumb: 'Schedule' },
+                inventory: { title: 'Inventory', icon: 'box', breadcrumb: 'Inventory' },
+                reports: { title: 'Reports', icon: 'file-alt', breadcrumb: 'Reports' },
+                settings: { title: 'Settings', icon: 'cog', breadcrumb: 'Settings' },
+                profile: { title: 'Profile', icon: 'user', breadcrumb: 'Profile' }
+            };
+            
+            const info = titles[page] || titles.dashboard;
+            document.getElementById('pageTitle').innerHTML = `<i class="fas fa-${info.icon}" style="color: var(--stackly-global-color);"></i>${info.title}`;
+            document.getElementById('breadcrumb').innerHTML = `
+                <a onclick="navigateTo('dashboard')">Home</a>
+                <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
+                <span>${info.breadcrumb}</span>
+            `;
+        }
+
+        // Sidebar Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('toggleIcon');
+            sidebar.classList.toggle('collapsed');
+            icon.classList.toggle('fa-chevron-left');
+            icon.classList.toggle('fa-chevron-right');
+        }
+
+        function toggleMobileSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+        }
+
+        function toggleSubmenu(item) {
+            item.classList.toggle('open');
+        }
+
+        // Render Functions
+        function renderTimeline() {
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = activities.map((activity, index) => `
+                <div class="timeline-item" style="animation-delay: ${index * 0.1}s">
+                    <div class="timeline-dot" style="background: ${activity.color}; box-shadow: 0 0 0 3px ${activity.color}40;"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">${activity.time}</div>
+                        <div class="timeline-text">${activity.text}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderExperiments() {
+            const tbody = document.getElementById('experimentsTableBody');
+            const start = (currentPage - 1) * 5;
+            const pageData = filteredExperiments.slice(start, start + 5);
+            
+            tbody.innerHTML = pageData.map((exp, index) => `
+                <tr style="animation-delay: ${index * 0.1}s">
+                    <td>
+                        <div class="user-cell">
+                            <div class="user-img">${exp.name.charAt(0)}</div>
+                            <div class="user-details">
+                                <h4>${exp.name}</h4>
+                                <p>ID: #${String(exp.id).padStart(4, '0')}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${exp.researcher}</td>
+                    <td><span class="status-badge status-${exp.type === 'genetic' ? 'active' : exp.type === 'chemical' ? 'pending' : 'inactive'}">${exp.type}</span></td>
+                    <td><span class="status-badge status-${exp.status}">${exp.status}</span></td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="flex: 1; height: 6px; background: var(--stackly-light-color); border-radius: 3px; overflow: hidden;">
+                                <div style="width: ${exp.progress}%; height: 100%; background: ${exp.progress === 100 ? '#2ed573' : 'var(--stackly-global-color)'}; border-radius: 3px;"></div>
+                            </div>
+                            <span style="font-size: 0.85rem; font-weight: 600;">${exp.progress}%</span>
+                        </div>
+                    </td>
+                    <td>${exp.date}</td>
+                    <td class="action-cell">
+                        <button class="table-action" onclick="window.location.href='404-admin.html'" title="View">
+    <i class="fas fa-eye"></i>
+</button>
+
+<button class="table-action" onclick="window.location.href='404-admin.html'" title="Edit">
+    <i class="fas fa-edit"></i>
+</button>
+
+<button class="table-action" onclick="window.location.href='404-admin.html'" title="Delete" style="color: #ff4757;">
+    <i class="fas fa-trash"></i>
+</button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            updatePagination();
+        }
+
+        function renderProjects() {
+            const tbody = document.getElementById('projectsTableBody');
+            tbody.innerHTML = projects.map((proj, index) => `
+                <tr style="animation-delay: ${index * 0.1}s">
+                    <td><strong>${proj.id}</strong></td>
+                    <td>${proj.name}</td>
+                    <td>${proj.lead}</td>
+                    <td>${proj.date}</td>
+                    <td><span class="status-badge status-${proj.status}">${proj.status}</span></td>
+                    <td>${proj.budget}</td>
+                    <td class="action-cell">
+              <button class="table-action" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-eye"></i>
+</button>
+
+<button class="table-action" onclick="window.location.href='404-admin.html'">
+    <i class="fas fa-edit"></i>
+</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTeam() {
+            const grid = document.getElementById('teamGrid');
+            grid.innerHTML = teamMembers.map((member, index) => `
+                <div class="team-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="team-avatar">${member.name.split(' ').map(n => n[0]).join('')}</div>
+                    <div class="team-name">${member.name}</div>
+                    <div class="team-role">${member.role}</div>
+                    <div style="color: rgba(0,24,55,0.6); font-size: 0.9rem;">${member.dept}</div>
+                    <div class="team-stats">
+                        <div class="team-stat">
+                            <div class="team-stat-value">${member.projects}</div>
+                            <div class="team-stat-label">Projects</div>
+                        </div>
+                        <div class="team-stat">
+                            <div class="team-stat-value">${member.publications}</div>
+                            <div class="team-stat-label">Papers</div>
+                        </div>
+                    </div>
+                   <button class="btn btn-primary" style="width: 100%; margin-top: 16px;"
+        onclick="window.location.href='404-admin.html'">
+    View Profile
+</button>
+                </div>
+            `).join('');
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredExperiments.length / 5);
+            const pagination = document.getElementById('expPagination');
+            let html = `
+                <button class="page-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            html += `
+                <button class="page-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            pagination.innerHTML = html;
+        }
+
+        // Filter Functions
+        function filterExperiments() {
+            const search = document.getElementById('expSearch').value.toLowerCase();
+            const typeFilter = document.querySelector('#experiments select:nth-of-type(1)').value;
+            const statusFilter = document.querySelector('#experiments select:nth-of-type(2)').value;
+            
+            filteredExperiments = experiments.filter(exp => {
+                const matchesSearch = exp.name.toLowerCase().includes(search) || exp.researcher.toLowerCase().includes(search);
+                const matchesType = !typeFilter || exp.type === typeFilter;
+                const matchesStatus = !statusFilter || exp.status === statusFilter;
+                return matchesSearch && matchesType && matchesStatus;
+            });
+            
+            currentPage = 1;
+            renderExperiments();
+        }
+
+        function filterProjects(search) {
+            // Implementation for project filtering
+            showToast(`Filtering projects: ${search}`, 'info');
+        }
+
+        // Actions
+        function viewExperiment(id) {
+            showToast(`Viewing experiment #${id}`, 'info');
+        }
+
+        function editExperiment(id) {
+            showToast(`Editing experiment #${id}`, 'warning');
+        }
+
+        function deleteExperiment(id) {
+            if (confirm('Are you sure you want to delete this experiment?')) {
+                const index = experiments.findIndex(e => e.id === id);
+                if (index > -1) {
+                    experiments.splice(index, 1);
+                    filteredExperiments = [...experiments];
+                    renderExperiments();
+                    showToast('Experiment deleted successfully', 'success');
+                }
+            }
+        }
+
+        function changePage(delta) {
+            const totalPages = Math.ceil(filteredExperiments.length / 5);
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderExperiments();
+            }
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderExperiments();
+        }
+
+        // Modal Functions
+        function openModal(type) {
+            currentModalType = type;
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+            
+            const titles = {
+                project: 'Create New Project',
+                experiment: 'Create New Experiment',
+                publication: 'Add Publication',
+                member: 'Add Team Member',
+                inventory: 'Add Inventory Item',
+                event: 'Add Calendar Event'
+            };
+            
+            title.textContent = titles[type] || 'Create New';
+            
+            const forms = {
+                experiment: `
+                    <div class="form-group">
+                        <label class="form-label">Experiment Name</label>
+                        <input type="text" class="form-input" placeholder="Enter experiment name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Research Lead</label>
+                        <input type="text" class="form-input" placeholder="Enter researcher name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Experiment Type</label>
+                        <select class="form-input">
+                            <option>Genetic Research</option>
+                            <option>Chemical Analysis</option>
+                            <option>Clinical Trial</option>
+                            <option>Microbiology</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority Level</label>
+                        <select class="form-input">
+                            <option>Low</option>
+                            <option selected>Medium</option>
+                            <option>High</option>
+                            <option>Critical</option>
+                        </select>
+                    </div>
+                `,
+                project: `
+                    <div class="form-group">
+                        <label class="form-label">Project Name</label>
+                        <input type="text" class="form-input" placeholder="Enter project name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Project Lead</label>
+                        <input type="text" class="form-input" placeholder="Enter project lead" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Budget</label>
+                        <input type="text" class="form-input" placeholder="$0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" placeholder="Project description..."></textarea>
+                    </div>
+                `,
+                member: `
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" placeholder="Enter full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" placeholder="Enter email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <select class="form-input">
+                            <option>Genomics</option>
+                            <option>Pharmacology</option>
+                            <option>Microbiology</option>
+                            <option>Bioinformatics</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <input type="text" class="form-input" placeholder="Enter role">
+                    </div>
+                `
+            };
+            
+            content.innerHTML = forms[type] || forms.experiment;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function closeModalOnOverlay(event) {
+            if (event.target === event.currentTarget) {
+                closeModal();
+            }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            closeModal();
+            showToast(`${currentModalType.charAt(0).toUpperCase() + currentModalType.slice(1)} created successfully!`, 'success');
+            
+            // Add dummy data based on type
+            if (currentModalType === 'experiment') {
+                const newId = experiments.length + 1;
+                experiments.unshift({
+                    id: newId,
+                    name: event.target[0].value,
+                    researcher: event.target[1].value,
+                    type: 'genetic',
+                    status: 'pending',
+                    progress: 0,
+                    date: new Date().toISOString().split('T')[0]
+                });
+                filteredExperiments = [...experiments];
+                renderExperiments();
+            }
+            event.target.reset();
+        }
+
+        // 404 Page
+        function show404() {
+            document.getElementById('page404').classList.add('active');
+        }
+
+        function hide404() {
+            document.getElementById('page404').classList.remove('active');
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'times-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            const colors = {
+                success: '#2ed573',
+                error: '#ff4757',
+                warning: '#ffc107',
+                info: '#3772ff'
+            };
+            
+            toast.innerHTML = `
+                <i class="fas fa-${icons[type]}" style="color: ${colors[type]}; font-size: 1.2rem;"></i>
+                <span style="font-weight: 500; color: var(--stackly-secondary-color);">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Animations
+        function animateCounters() {
+            const stats = [
+                { id: 'stat1', target: 2847 },
+                { id: 'stat2', target: 1234 },
+                { id: 'stat3', target: 456 },
+                { id: 'stat4', target: 23 }
+            ];
+
+            stats.forEach(stat => {
+                const element = document.getElementById(stat.id);
+                if (!element) return;
+                let current = 0;
+                const increment = stat.target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= stat.target) {
+                        current = stat.target;
+                        clearInterval(timer);
+                    }
+                    element.textContent = Math.floor(current).toLocaleString();
+                }, 30);
+            });
+        }
+
+        function animateProgressRing() {
+            const circle = document.getElementById('progressCircle');
+            if (!circle) return;
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            const percent = 87;
+            const offset = circumference - (percent / 100) * circumference;
+            
+            setTimeout(() => {
+                circle.style.strokeDashoffset = offset;
+            }, 500);
+
+            let current = 0;
+            const text = document.getElementById('successRate');
+            if (!text) return;
+            const timer = setInterval(() => {
+                current++;
+                text.textContent = current + '%';
+                if (current >= percent) clearInterval(timer);
+            }, 15);
+        }
+
+        // Other Functions
+        function refreshChart() {
+            showToast('Refreshing chart data...', 'info');
+            document.querySelectorAll('.big-bar').forEach((bar, index) => {
+                bar.style.animation = 'none';
+                setTimeout(() => {
+                    bar.style.animation = 'barGrow 1s ease-out forwards';
+                }, index * 100);
+            });
+        }
+
+        function exportData() {
+            showToast('Preparing export...', 'info');
+            setTimeout(() => {
+                showToast('Data exported successfully!', 'success');
+            }, 1500);
+        }
+
+        function clearActivity() {
+            document.getElementById('timeline').innerHTML = '<div style="text-align: center; color: rgba(0,24,55,0.5); padding: 20px;">No recent activity</div>';
+            showToast('Activity log cleared', 'success');
+        }
+
+        function toggleTheme() {
+            const icon = document.getElementById('themeIcon');
+            if (icon.classList.contains('fa-moon')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                document.body.style.filter = 'invert(1) hue-rotate(180deg)';
+                document.body.style.background = '#001837';
+                showToast('Dark mode activated', 'success');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                document.body.style.filter = '';
+                document.body.style.background = '';
+                showToast('Light mode activated', 'success');
+            }
+        }
+
+        function showNotifications() {
+            showToast('You have 3 new notifications', 'info');
+        }
+
+        function toggleSearchFilters() {
+            document.getElementById('searchContainer').classList.toggle('active');
+        }
+
+        function setFilter(element) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+            element.classList.add('active');
+            showToast(`Filter applied: ${element.textContent}`, 'success');
+        }
+
+        function handleGlobalSearch(event) {
+            if (event.key === 'Enter') {
+                showToast(`Searching for: ${event.target.value}`, 'info');
+            }
+        }
+
+        // Close search filters when clicking outside
+        document.addEventListener('click', (e) => {
+            const searchContainer = document.getElementById('searchContainer');
+            if (!searchContainer.contains(e.target)) {
+                searchContainer.classList.remove('active');
+            }
+        });
+    </script>
+
+    <script>
+let currentDate = new Date();
+
+function renderCalendar() {
+    const grid = document.getElementById("calendarGrid");
+    const title = document.getElementById("calendarTitle");
+
+    grid.innerHTML = "";
+
+    const month = currentDate.getMonth();
+    const year = currentDate.getFullYear();
+
+    // Month title
+    const monthNames = ["January","February","March","April","May","June",
+                        "July","August","September","October","November","December"];
+
+    title.innerText = `${monthNames[month]} ${year}`;
+
+    // Day headers
+    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    days.forEach(day => {
+        grid.innerHTML += `<div class="calendar-day-header">${day}</div>`;
+    });
+
+    // First day
+    const firstDay = new Date(year, month, 1).getDay();
+
+    // Total days
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    // Previous month days
+    const prevDays = new Date(year, month, 0).getDate();
+
+    // Fill previous days
+    for (let i = firstDay - 1; i >= 0; i--) {
+        grid.innerHTML += `<div class="calendar-day other-month">${prevDays - i}</div>`;
+    }
+
+    // Current month days
+    for (let i = 1; i <= totalDays; i++) {
+        let today = new Date();
+        let isToday =
+            i === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear();
+
+        let randomEvent = Math.random() > 0.8 ? "has-event" : "";
+
+        grid.innerHTML += `
+            <div class="calendar-day ${isToday ? "active" : ""} ${randomEvent}">
+                ${i}
+            </div>
+        `;
+    }
+
+    // Fill next month days
+    let totalCells = grid.children.length;
+    let nextDays = 42 - totalCells; // 6 rows
+
+    for (let i = 1; i <= nextDays; i++) {
+        grid.innerHTML += `<div class="calendar-day other-month">${i}</div>`;
+    }
+}
+
+// Change month
+function changeMonth(step) {
+    currentDate.setMonth(currentDate.getMonth() + step);
+    renderCalendar();
+}
+
+// Init
+renderCalendar();
+</script>
+
+    <script>
+document.addEventListener("click", function (e) {
+    const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.querySelector(".mobile-toggle");
+
+    // Only for mobile view
+    if (window.innerWidth <= 768) {
+
+        // If sidebar is open
+        if (sidebar.classList.contains("mobile-open")) {
+
+            // Click outside sidebar & not on toggle button
+            if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove("mobile-open");
+            }
+        }
+    }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const email = localStorage.getItem("userEmail");
+    const loginTime = localStorage.getItem("loginTime");
+
+    if (email) {
+        document.getElementById("displayEmail").innerText = email;
+    }
+
+    if (loginTime) {
+        document.getElementById("loginTime").innerText = "Logged in: " + loginTime;
+    }
+
+});
+</script>
+
+<script>
+function logoutUser() {
+    // Clear stored data
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("loginTime");
+    localStorage.removeItem("userRole");
+
+    // Redirect to login page
+    window.location.href = "login.html";
+}
+</script>
+</body>
+</html>

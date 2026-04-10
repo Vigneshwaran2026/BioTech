@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Error</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --stackly-global-color: #3772ff;
+            --stackly-global-color-rgb: 55, 114, 255;
+            --stackly-secondary-color: #001837;
+            --stackly-secondary-color-rgb: 0, 24, 55;
+            --stackly-light-color: #eaf1ff;
+            --stackly-white-color: #ffffff;
+            --stackly-white-color-rgb: 255, 255, 255;
+            --stackly-blackish-color: #011938;
+            --stackly-blackish-color-rgb: 1, 25, 56;
+            --stackly-link-color-normal: #001837;
+            --stackly-link-color-hover: #3772ff;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--stackly-blackish-color);
+            color: var(--stackly-white-color);
+            overflow-x: hidden;
+            overflow-y: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Glitch Effect for 404 */
+        .glitch-wrapper {
+            position: relative;
+        }
+
+        .glitch {
+            font-size: 180px;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--stackly-white-color);
+            position: relative;
+            z-index: 10;
+            letter-spacing: -5px;
+            animation: glitch-skew 3s infinite linear alternate-reverse;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--stackly-global-color);
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(30px, 9999px, 10px, 0); }
+            5% { clip: rect(70px, 9999px, 90px, 0); }
+            10% { clip: rect(20px, 9999px, 50px, 0); }
+            15% { clip: rect(80px, 9999px, 10px, 0); }
+            20% { clip: rect(10px, 9999px, 40px, 0); }
+            25% { clip: rect(50px, 9999px, 20px, 0); }
+            30% { clip: rect(60px, 9999px, 90px, 0); }
+            35% { clip: rect(10px, 9999px, 30px, 0); }
+            40% { clip: rect(80px, 9999px, 60px, 0); }
+            45% { clip: rect(30px, 9999px, 10px, 0); }
+            50% { clip: rect(90px, 9999px, 80px, 0); }
+            55% { clip: rect(20px, 9999px, 50px, 0); }
+            60% { clip: rect(60px, 9999px, 10px, 0); }
+            65% { clip: rect(40px, 9999px, 70px, 0); }
+            70% { clip: rect(10px, 9999px, 30px, 0); }
+            75% { clip: rect(80px, 9999px, 20px, 0); }
+            80% { clip: rect(50px, 9999px, 90px, 0); }
+            85% { clip: rect(20px, 9999px, 60px, 0); }
+            90% { clip: rect(70px, 9999px, 10px, 0); }
+            95% { clip: rect(30px, 9999px, 50px, 0); }
+            100% { clip: rect(60px, 9999px, 80px, 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip: rect(10px, 9999px, 80px, 0); }
+            20% { clip: rect(80px, 9999px, 10px, 0); }
+            40% { clip: rect(30px, 9999px, 50px, 0); }
+            60% { clip: rect(60px, 9999px, 20px, 0); }
+            80% { clip: rect(20px, 9999px, 90px, 0); }
+            100% { clip: rect(50px, 9999px, 30px, 0); }
+        }
+
+        @keyframes glitch-skew {
+            0% { transform: skew(0deg); }
+            10% { transform: skew(-2deg); }
+            20% { transform: skew(2deg); }
+            30% { transform: skew(0deg); }
+            40% { transform: skew(1deg); }
+            50% { transform: skew(-1deg); }
+            60% { transform: skew(0deg); }
+            70% { transform: skew(2deg); }
+            80% { transform: skew(-2deg); }
+            90% { transform: skew(1deg); }
+            100% { transform: skew(0deg); }
+        }
+
+        /* Scanline effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.3;
+        }
+
+        /* Pulse animation for bio elements */
+        .pulse-ring {
+            position: absolute;
+            border: 2px solid var(--stackly-global-color);
+            border-radius: 50%;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            opacity: 0;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Floating animation */
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Hexagon grid background */
+        .hex-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(30deg, var(--stackly-global-color) 12%, transparent 12.5%, transparent 87%, var(--stackly-global-color) 87.5%, var(--stackly-global-color)),
+                linear-gradient(150deg, var(--stackly-global-color) 12%, transparent 12.5%, transparent 87%, var(--stackly-global-color) 87.5%, var(--stackly-global-color)),
+                linear-gradient(30deg, var(--stackly-global-color) 12%, transparent 12.5%, transparent 87%, var(--stackly-global-color) 87.5%, var(--stackly-global-color)),
+                linear-gradient(150deg, var(--stackly-global-color) 12%, transparent 12.5%, transparent 87%, var(--stackly-global-color) 87.5%, var(--stackly-global-color)),
+                linear-gradient(60deg, rgba(55, 114, 255, 0.1) 25%, transparent 25.5%, transparent 75%, rgba(55, 114, 255, 0.1) 75%, rgba(55, 114, 255, 0.1)),
+                linear-gradient(60deg, rgba(55, 114, 255, 0.1) 25%, transparent 25.5%, transparent 75%, rgba(55, 114, 255, 0.1) 75%, rgba(55, 114, 255, 0.1));
+            background-size: 80px 140px;
+            background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+            opacity: 0.05;
+            z-index: 0;
+        }
+
+        /* Button hover effect */
+        .btn-bio {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-bio::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-bio:hover::before {
+            left: 100%;
+        }
+
+        /* DNA strand decoration */
+        .dna-strand {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--stackly-global-color), transparent);
+            opacity: 0.3;
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .glitch {
+                font-size: 100px;
+            }
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex items-center justify-center">
+
+    <!-- Background Elements -->
+    <div class="hex-grid"></div>
+    <div class="scanlines"></div>
+    
+    <!-- Canvas for Particle Network -->
+    <canvas id="networkCanvas" class="absolute inset-0 w-full h-full z-0"></canvas>
+
+    <!-- DNA Strands -->
+    <div class="dna-strand left-[10%] top-0"></div>
+    <div class="dna-strand left-[90%] top-0"></div>
+    <div class="dna-strand left-[25%] top-0 opacity-20"></div>
+    <div class="dna-strand left-[75%] top-0 opacity-20"></div>
+
+    <!-- Main Content -->
+  <div class="relative z-10 text-center px-4 max-w-5xl mx-auto pt-2 md:pt-4">
+        
+        <!-- Biohazard Icon with Pulse -->
+        <div class="relative inline-block mb-8 float">
+            <svg class="w-24 h-24 mx-auto text-[#3772ff]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 5c-2 0-3 1.5-3 3.5 0 1.5 1 2.5 2 3l-1 4c-2-.5-4-2.5-4-5 0-3.5 2.5-6 6-6z" opacity="0.8"/>
+                <path d="M12 5c2 0 3 1.5 3 3.5 0 1.5-1 2.5-2 3l1 4c2-.5 4-2.5 4-5 0-3.5-2.5-6-6-6z" opacity="0.8"/>
+                <path d="M7 14c-1 1-1 3 0 4.5 1 1.5 2.5 2 4 1.5l2 3.5c-2.5 1-5.5.5-7.5-1.5-2-2-2.5-5-1.5-7.5z" opacity="0.8"/>
+                <path d="M17 14c1 1 1 3 0 4.5-1 1.5-2.5 2-4 1.5l-2 3.5c2.5 1 5.5.5 7.5-1.5 2-2 2.5-5 1.5-7.5z" opacity="0.8"/>
+            </svg>
+            <div class="pulse-ring absolute inset-0 w-24 h-24 rounded-full border-2 border-[#3772ff]"></div>
+            <div class="pulse-ring absolute inset-0 w-24 h-24 rounded-full border-2 border-[#3772ff]" style="animation-delay: 0.5s"></div>
+            <div class="pulse-ring absolute inset-0 w-24 h-24 rounded-full border-2 border-[#3772ff]" style="animation-delay: 1s"></div>
+        </div>
+
+        <!-- 404 Glitch Text -->
+        <div class="glitch-wrapper mb-6">
+            <div class="glitch" data-text="404">404</div>
+        </div>
+
+        <!-- Error Message -->
+        <h2 class="text-2xl md:text-4xl font-bold mb-4 text-[#eaf1ff] tracking-wide uppercase">
+            System Sequence Not Found
+        </h2>
+
+        <!-- Typing Effect Description -->
+        <p class="mono text-[#3772ff] text-sm md:text-base mb-8 h-6 typing-cursor" id="typewriter"></p>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="admin-dashboard.html" class="btn-bio group relative px-8 py-4 bg-[#3772ff] text-white font-bold rounded-lg overflow-hidden transition-all hover:shadow-[0_0_30px_rgba(55,114,255,0.5)] hover:-translate-y-1">
+                <span class="relative z-10 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Return to Dashboard
+                </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#3772ff] to-[#001837] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Floating Particles Container -->
+    <div id="particles" class="absolute inset-0 pointer-events-none z-20"></div>
+
+    <script>
+        // Typewriter Effect
+        const phrases = [
+            "Analyzing DNA sequence...",
+            "Error: Genome fragment missing...",
+            "Attempting cellular reconstruction...",
+            "Warning: Biological hazard detected...",
+            "System recombination failed..."
+        ];
+        
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typewriterElement = document.getElementById('typewriter');
+        
+        function typeWriter() {
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isDeleting) {
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            let typeSpeed = isDeleting ? 50 : 100;
+            
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typeSpeed = 500;
+            }
+            
+            setTimeout(typeWriter, typeSpeed);
+        }
+        
+        typeWriter();
+
+        // Update Timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('timestamp').textContent = now.toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+        }
+        setInterval(updateTimestamp, 1000);
+        updateTimestamp();
+
+        // Canvas Particle Network
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        const particleCount = 80;
+        const connectionDistance = 150;
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        
+        window.addEventListener('resize', resize);
+        resize();
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(55, 114, 255, 0.5)';
+                ctx.fill();
+            }
+        }
+        
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            particles.forEach((particle, i) => {
+                particle.update();
+                particle.draw();
+                
+                // Draw connections
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[j].x - particle.x;
+                    const dy = particles[j].y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(55, 114, 255, ${0.2 * (1 - distance / connectionDistance)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        initParticles();
+        animate();
+
+        // Mouse interaction
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Subtle parallax effect on glitch text
+            const glitch = document.querySelector('.glitch');
+            const moveX = (mouseX - width / 2) / 50;
+            const moveY = (mouseY - height / 2) / 50;
+            glitch.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+
+        // Random glitch triggers
+        setInterval(() => {
+            const glitch = document.querySelector('.glitch');
+            glitch.style.animation = 'none';
+            setTimeout(() => {
+                glitch.style.animation = '';
+            }, 100);
+        }, 5000);
+    </script>
+</body>
+</html>
