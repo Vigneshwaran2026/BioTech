@@ -91,7 +91,7 @@
     left: 0;
     top: 0;
     width: var(--sidebar-width);
-    height: 100vh;
+    height: 100dvh;
     background: var(--stackly-secondary-color);
     z-index: 1000;
     transition: var(--transition);
@@ -1954,6 +1954,17 @@
     }
 }
 
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1rem;          /* reduce size */
+        gap: 6px;
+    }
+
+    .page-title i {
+        font-size: 1rem;
+    }
+}
+
 
     </style>
 </head>
@@ -3124,12 +3135,18 @@
                 targetSection.classList.add('active');
             }
             
+              const sidebar = document.getElementById("sidebar");
+    if (window.innerWidth <= 768 && sidebar) {
+        sidebar.classList.remove("mobile-open");
+    }
+            
             // Update sidebar active state
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.remove('active');
                 if (item.dataset.page === page || item.querySelector(`[onclick*="${page}"]`)) {
                     item.classList.add('active');
                 }
+
             });
             
             // Update header
@@ -3162,6 +3179,7 @@
                     animateProgressRing();
                 }, 100);
             }
+    
         }
 
         function updateHeader(page) {
@@ -3182,11 +3200,6 @@
             
             const info = titles[page] || titles.dashboard;
             document.getElementById('pageTitle').innerHTML = `<i class="fas fa-${info.icon}" style="color: var(--stackly-global-color);"></i>${info.title}`;
-            document.getElementById('breadcrumb').innerHTML = `
-                <a onclick="navigateTo('dashboard')">Home</a>
-                <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
-                <span>${info.breadcrumb}</span>
-            `;
         }
 
         // Sidebar Functions
@@ -3553,8 +3566,6 @@
                 <span style="font-weight: 500; color: var(--stackly-secondary-color);">${message}</span>
             `;
             
-            container.appendChild(toast);
-            
             setTimeout(() => {
                 toast.style.animation = 'slideInRight 0.3s ease-out reverse';
                 setTimeout(() => toast.remove(), 300);
@@ -3619,63 +3630,11 @@
             });
         }
 
-        function exportData() {
-            showToast('Preparing export...', 'info');
-            setTimeout(() => {
-                showToast('Data exported successfully!', 'success');
-            }, 1500);
-        }
-
         function clearActivity() {
             document.getElementById('timeline').innerHTML = '<div style="text-align: center; color: rgba(0,24,55,0.5); padding: 20px;">No recent activity</div>';
             showToast('Activity log cleared', 'success');
         }
 
-        function toggleTheme() {
-            const icon = document.getElementById('themeIcon');
-            if (icon.classList.contains('fa-moon')) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-                document.body.style.filter = 'invert(1) hue-rotate(180deg)';
-                document.body.style.background = '#001837';
-                showToast('Dark mode activated', 'success');
-            } else {
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-                document.body.style.filter = '';
-                document.body.style.background = '';
-                showToast('Light mode activated', 'success');
-            }
-        }
-
-        function showNotifications() {
-            showToast('You have 3 new notifications', 'info');
-        }
-
-        function toggleSearchFilters() {
-            document.getElementById('searchContainer').classList.toggle('active');
-        }
-
-        function setFilter(element) {
-            const parent = element.parentElement;
-            parent.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
-            element.classList.add('active');
-            showToast(`Filter applied: ${element.textContent}`, 'success');
-        }
-
-        function handleGlobalSearch(event) {
-            if (event.key === 'Enter') {
-                showToast(`Searching for: ${event.target.value}`, 'info');
-            }
-        }
-
-        // Close search filters when clicking outside
-        document.addEventListener('click', (e) => {
-            const searchContainer = document.getElementById('searchContainer');
-            if (!searchContainer.contains(e.target)) {
-                searchContainer.classList.remove('active');
-            }
-        });
     </script>
 
     <script>

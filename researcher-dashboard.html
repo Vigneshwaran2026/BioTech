@@ -90,7 +90,7 @@
     left: 0;
     top: 0;
     width: var(--sidebar-width);
-    height: 100vh;
+    height: 100dvh;
     background: var(--stackly-secondary-color);
     z-index: 1000;
     transition: var(--transition);
@@ -2297,6 +2297,58 @@
     text-align: center;
 }
 
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1rem;          /* reduce size */
+        gap: 6px;
+    }
+
+    .page-title i {
+        font-size: 1rem;
+    }
+}
+
+
+
+@media (max-width: 768px) {
+
+    .experiment-card {
+        width: 100%;
+        padding: 16px;
+        overflow: hidden;     /* ✅ prevents cut */
+    }
+
+    .experiment-description {
+        word-break: break-word;   /* ✅ long text fix */
+    }
+}
+
+
+
+@media (max-width: 768px) {
+
+    .experiment-meta {
+        flex-direction: column;   /* ✅ stack */
+        gap: 6px;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    .experiment-actions {
+        flex-direction: column;   /* ✅ stack buttons */
+        gap: 8px;
+    }
+
+    .experiment-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+
+
     </style>
 </head>
 <body>
@@ -3428,6 +3480,11 @@
                     item.classList.add('active');
                 }
             });
+
+                          const sidebar = document.getElementById("sidebar");
+    if (window.innerWidth <= 768 && sidebar) {
+        sidebar.classList.remove("mobile-open");
+    }
             
             updateHeader(page);
             document.getElementById('sidebar').classList.remove('mobile-open');

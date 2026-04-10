@@ -91,7 +91,7 @@
     left: 0;
     top: 0;
     width: var(--sidebar-width);
-    height: 100vh;
+    height: 100dvh;
     background: var(--stackly-secondary-color);
     z-index: 1000;
     transition: var(--transition);
@@ -2258,6 +2258,19 @@
         color: #111827;
     }
 }
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1rem;          /* reduce size */
+        gap: 6px;
+    }
+
+    .page-title i {
+        font-size: 1rem;
+    }
+}
+
+
     </style>
 </head>
 <body>
@@ -3631,6 +3644,11 @@
                     item.classList.add('active');
                 }
             });
+
+                          const sidebar = document.getElementById("sidebar");
+    if (window.innerWidth <= 768 && sidebar) {
+        sidebar.classList.remove("mobile-open");
+    }
             
             updateHeader(page);
             document.getElementById('sidebar').classList.remove('mobile-open');
@@ -3672,11 +3690,6 @@
             
             const info = titles[page] || titles.overview;
             document.getElementById('pageTitle').innerHTML = `<i class="fas fa-${info.icon}" style="color: var(--stackly-global-color);"></i>${info.title}`;
-            document.getElementById('breadcrumb').innerHTML = `
-                <a onclick="navigateTo('overview')">Home</a>
-                <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
-                <span>${info.breadcrumb}</span>
-            `;
         }
 
         // Sidebar Functions
@@ -3983,7 +3996,6 @@
                 <span style="font-weight: 500; color: var(--stackly-secondary-color);">${message}</span>
             `;
             
-            container.appendChild(toast);
             
             setTimeout(() => {
                 toast.style.animation = 'slideInRight 0.3s ease-out reverse';
