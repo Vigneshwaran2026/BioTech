@@ -3352,6 +3352,41 @@
                     </div>
                 </div>
             </div>
+
+                        <!-- PROFILE SECTION -->
+            <div class="content-section" id="profile">
+                <div class="section-card" style="max-width: 600px; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 32px;">
+                        <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--stackly-global-color), #5a8cff); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white; font-size: 3rem; font-weight: 700;">JD</div>
+                        <h2 style="color: var(--stackly-secondary-color); margin-bottom: 4px;">Dr. John Doe</h2>
+                        <p style="color: rgba(0,24,55,0.6);">Lead Researcher | Genomics Department</p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); showToast('Profile updated successfully!', 'success');">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" value="Dr. John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" value="john.doe@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-input" value="+91 1234567890">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-textarea">Senior researcher with 15 years of experience in molecular biology and genetic engineering.</textarea>
+                        </div>
+                      <button type="submit" class="btn btn-primary" style="width: 100%;"
+        onclick="window.location.href='404-researcher.html'">
+    <i class="fas fa-save"></i> Save Changes
+</button>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </main>
 
